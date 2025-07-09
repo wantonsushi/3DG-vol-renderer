@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\euany\OneDrive\Documents\3DG-vol-renderer\src\gaussian.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\euany\OneDrive\Documents\3DG-vol-renderer\src\ray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\euany\OneDrive\Documents\3DG-vol-renderer\src\renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\euany\OneDrive\Documents\3DG-vol-renderer\src\scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\euany\OneDrive\Documents\3DG-vol-renderer\src\volume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\euany\OneDrive\Documents\3DG-vol-renderer\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{49B5D93C-B199-3D51-92BC-774BA3831D7E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

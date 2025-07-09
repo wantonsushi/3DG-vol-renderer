@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Clang-Windows",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/Users/euany/vcpkg/installed/x64-windows/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:/Program Files/LLVM/bin/clang++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}

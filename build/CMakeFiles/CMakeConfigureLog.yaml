@@ -1,0 +1,806 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Windows - 10.0.26100 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: C:/Program Files/LLVM/bin/clang++.exe 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.exe"
+      
+      The CXX compiler identification is Clang, found in:
+        C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/3.30.1/CompilerIdCXX/a.exe
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:1243 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:250 (CMAKE_DETERMINE_MSVC_SHOWINCLUDES_PREFIX)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Detecting CXX compiler /showIncludes prefix:
+        
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:1243 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:250 (CMAKE_DETERMINE_MSVC_SHOWINCLUDES_PREFIX)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Detecting CXX compiler /showIncludes prefix:
+        
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-qs75l4"
+      binary: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-qs75l4"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/Program Files/LLVM/bin/clang-scan-deps.exe"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-O0 -g -Xclang -gcodeview"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-qs75l4'
+        
+        Run Build Command(s): C:/Users/euany/OneDrive/Documents/ninja/ninja.exe -v cmTC_c8759
+        [1/2] C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE   -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -MD -MT CMakeFiles/cmTC_c8759.dir/CMakeCXXCompilerABI.cpp.obj -MF CMakeFiles\\cmTC_c8759.dir\\CMakeCXXCompilerABI.cpp.obj.d -o CMakeFiles/cmTC_c8759.dir/CMakeCXXCompilerABI.cpp.obj -c "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp"
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -nostartfiles -nostdlib -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -v  -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_c8759.dir/CMakeCXXCompilerABI.cpp.obj -o cmTC_c8759.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_c8759.lib -Xlinker /pdb:cmTC_c8759.pdb -Xlinker /version:0.0     && cd ."
+        clang version 20.1.7
+        Target: x86_64-pc-windows-msvc
+        Thread model: posix
+        InstalledDir: C:\\Program Files\\LLVM\\bin
+         "C:\\\\Program Files\\\\LLVM\\\\bin\\\\lld-link" -out:cmTC_c8759.exe "-libpath:C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\MSVC\\\\14.42.34433\\\\lib\\\\x64" "-libpath:C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\MSVC\\\\14.42.34433\\\\atlmfc\\\\lib\\\\x64" "-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.22621.0\\\\ucrt\\\\x64" "-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.22621.0\\\\um\\\\x64" "-libpath:C:\\\\Program Files\\\\LLVM\\\\lib\\\\clang\\\\20\\\\lib\\\\windows" -nologo -debug /subsystem:console CMakeFiles/cmTC_c8759.dir/CMakeCXXCompilerABI.cpp.obj /MANIFEST:EMBED /implib:cmTC_c8759.lib /pdb:cmTC_c8759.pdb /version:0.0
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'CXX': C:/Program Files/LLVM/bin/lld-link
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files/LLVM/bin/lld-link" "-v"
+      lld-link: warning: ignoring unknown argument '-v'
+      lld-link: error: no input files
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files/LLVM/bin/lld-link" "-V"
+      lld-link: warning: ignoring unknown argument '-V'
+      lld-link: error: no input files
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files/LLVM/bin/lld-link" "--version"
+      LLD 20.1.7
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/FeatureTesting.cmake:34 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/FeatureTesting.cmake:87 (_record_compiler_features)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Compiler/CMakeCommonCompilerMacros.cmake:124 (_record_compiler_features_cxx)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerSupport.cmake:70 (cmake_record_cxx_compile_features)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:83 (CMAKE_DETERMINE_COMPILER_SUPPORT)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compile features"
+    directories:
+      source: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-hgiif2"
+      binary: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-hgiif2"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/Program Files/LLVM/bin/clang-scan-deps.exe"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-O0 -g -Xclang -gcodeview"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_CXX_FEATURE_TEST"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-hgiif2'
+        
+        Run Build Command(s): C:/Users/euany/OneDrive/Documents/ninja/ninja.exe -v cmTC_53945
+        [1/2] C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE   -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd   -std=c++14 -MD -MT CMakeFiles/cmTC_53945.dir/feature_tests.cxx.obj -MF CMakeFiles\\cmTC_53945.dir\\feature_tests.cxx.obj.d -o CMakeFiles/cmTC_53945.dir/feature_tests.cxx.obj -c C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-hgiif2/feature_tests.cxx
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -nostartfiles -nostdlib -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_53945.dir/feature_tests.cxx.obj -o cmTC_53945.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_53945.lib -Xlinker /pdb:cmTC_53945.pdb -Xlinker /version:0.0   -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames  && cd ."
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/FeatureTesting.cmake:34 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/FeatureTesting.cmake:87 (_record_compiler_features)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Compiler/CMakeCommonCompilerMacros.cmake:132 (_record_compiler_features_cxx)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerSupport.cmake:70 (cmake_record_cxx_compile_features)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:83 (CMAKE_DETERMINE_COMPILER_SUPPORT)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compile features"
+    directories:
+      source: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-9vdwl6"
+      binary: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-9vdwl6"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/Program Files/LLVM/bin/clang-scan-deps.exe"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-O0 -g -Xclang -gcodeview"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_CXX_FEATURE_TEST"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-9vdwl6'
+        
+        Run Build Command(s): C:/Users/euany/OneDrive/Documents/ninja/ninja.exe -v cmTC_d82dd
+        [1/2] C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE   -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd   -std=c++14 -MD -MT CMakeFiles/cmTC_d82dd.dir/feature_tests.cxx.obj -MF CMakeFiles\\cmTC_d82dd.dir\\feature_tests.cxx.obj.d -o CMakeFiles/cmTC_d82dd.dir/feature_tests.cxx.obj -c C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-9vdwl6/feature_tests.cxx
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -nostartfiles -nostdlib -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_d82dd.dir/feature_tests.cxx.obj -o cmTC_d82dd.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_d82dd.lib -Xlinker /pdb:cmTC_d82dd.pdb -Xlinker /version:0.0   -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames  && cd ."
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/FindOpenMP.cmake:238 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/FindOpenMP.cmake:506 (_OPENMP_GET_FLAGS)"
+      - "CMakeLists.txt:12 (find_package)"
+    description: "Detecting CXX OpenMP compiler info"
+    directories:
+      source: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-rjwbst"
+      binary: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-rjwbst"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/Program Files/LLVM/bin/clang-scan-deps.exe"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-O0 -g -Xclang -gcodeview"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "OpenMP_COMPILE_RESULT_CXX_fopenmplibomp"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-rjwbst'
+        
+        Run Build Command(s): C:/Users/euany/OneDrive/Documents/ninja/ninja.exe -v cmTC_774d2
+        [1/2] C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE   -fopenmp=libomp -O0 -g -Xclang -gcodeview -std=gnu++17 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -MD -MT CMakeFiles/cmTC_774d2.dir/OpenMPTryFlag.cpp.obj -MF CMakeFiles\\cmTC_774d2.dir\\OpenMPTryFlag.cpp.obj.d -o CMakeFiles/cmTC_774d2.dir/OpenMPTryFlag.cpp.obj -c C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-rjwbst/OpenMPTryFlag.cpp
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -nostartfiles -nostdlib -fopenmp=libomp -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_774d2.dir/OpenMPTryFlag.cpp.obj -o cmTC_774d2.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_774d2.lib -Xlinker /pdb:cmTC_774d2.pdb -Xlinker /version:0.0   -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames  && cd ."
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/FindOpenMP.cmake:238 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/FindOpenMP.cmake:506 (_OPENMP_GET_FLAGS)"
+      - "CMakeLists.txt:12 (find_package)"
+    description: "Detecting CXX OpenMP compiler info"
+    directories:
+      source: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-81qp23"
+      binary: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-81qp23"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/Program Files/LLVM/bin/clang-scan-deps.exe"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-O0 -g -Xclang -gcodeview"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "OpenMP_COMPILE_RESULT_CXX_fopenmplibiomp5"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-81qp23'
+        
+        Run Build Command(s): C:/Users/euany/OneDrive/Documents/ninja/ninja.exe -v cmTC_c818b
+        [1/2] C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE   -fopenmp=libiomp5 -O0 -g -Xclang -gcodeview -std=gnu++17 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -MD -MT CMakeFiles/cmTC_c818b.dir/OpenMPTryFlag.cpp.obj -MF CMakeFiles\\cmTC_c818b.dir\\OpenMPTryFlag.cpp.obj.d -o CMakeFiles/cmTC_c818b.dir/OpenMPTryFlag.cpp.obj -c C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-81qp23/OpenMPTryFlag.cpp
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -nostartfiles -nostdlib -fopenmp=libiomp5 -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_c818b.dir/OpenMPTryFlag.cpp.obj -o cmTC_c818b.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_c818b.lib -Xlinker /pdb:cmTC_c818b.pdb -Xlinker /version:0.0   -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames  && cd ."
+        FAILED: [code=1] cmTC_c818b.exe 
+        C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -nostartfiles -nostdlib -fopenmp=libiomp5 -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_c818b.dir/OpenMPTryFlag.cpp.obj -o cmTC_c818b.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_c818b.lib -Xlinker /pdb:cmTC_c818b.pdb -Xlinker /version:0.0   -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames  && cd ."
+        lld-link: error: could not open 'libiomp5md.lib': no such file or directory
+        clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+        ninja: build stopped: subcommand failed.
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/FindOpenMP.cmake:238 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/FindOpenMP.cmake:506 (_OPENMP_GET_FLAGS)"
+      - "CMakeLists.txt:12 (find_package)"
+    description: "Detecting CXX OpenMP compiler info"
+    directories:
+      source: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-nl9las"
+      binary: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-nl9las"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/Program Files/LLVM/bin/clang-scan-deps.exe"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-O0 -g -Xclang -gcodeview"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "OpenMP_COMPILE_RESULT_CXX_fopenmp"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-nl9las'
+        
+        Run Build Command(s): C:/Users/euany/OneDrive/Documents/ninja/ninja.exe -v cmTC_ce5a8
+        [1/2] C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE   -fopenmp -O0 -g -Xclang -gcodeview -std=gnu++17 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -MD -MT CMakeFiles/cmTC_ce5a8.dir/OpenMPTryFlag.cpp.obj -MF CMakeFiles\\cmTC_ce5a8.dir\\OpenMPTryFlag.cpp.obj.d -o CMakeFiles/cmTC_ce5a8.dir/OpenMPTryFlag.cpp.obj -c C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-nl9las/OpenMPTryFlag.cpp
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -nostartfiles -nostdlib -fopenmp -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_ce5a8.dir/OpenMPTryFlag.cpp.obj -o cmTC_ce5a8.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_ce5a8.lib -Xlinker /pdb:cmTC_ce5a8.pdb -Xlinker /version:0.0   -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames  && cd ."
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/FindOpenMP.cmake:238 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/FindOpenMP.cmake:506 (_OPENMP_GET_FLAGS)"
+      - "CMakeLists.txt:12 (find_package)"
+    description: "Detecting CXX OpenMP compiler info"
+    directories:
+      source: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-ovcl8x"
+      binary: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-ovcl8x"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/Program Files/LLVM/bin/clang-scan-deps.exe"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-O0 -g -Xclang -gcodeview"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "OpenMP_COMPILE_RESULT_CXX_Xclang fopenmp"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-ovcl8x'
+        
+        Run Build Command(s): C:/Users/euany/OneDrive/Documents/ninja/ninja.exe -v cmTC_41193
+        [1/2] C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE   -Xclang -fopenmp -O0 -g -Xclang -gcodeview -std=gnu++17 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -MD -MT CMakeFiles/cmTC_41193.dir/OpenMPTryFlag.cpp.obj -MF CMakeFiles\\cmTC_41193.dir\\OpenMPTryFlag.cpp.obj.d -o CMakeFiles/cmTC_41193.dir/OpenMPTryFlag.cpp.obj -c C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-ovcl8x/OpenMPTryFlag.cpp
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -nostartfiles -nostdlib -Xclang -fopenmp -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_41193.dir/OpenMPTryFlag.cpp.obj -o cmTC_41193.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_41193.lib -Xlinker /pdb:cmTC_41193.pdb -Xlinker /version:0.0   -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames  && cd ."
+        FAILED: [code=1] cmTC_41193.exe 
+        C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -nostartfiles -nostdlib -Xclang -fopenmp -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_41193.dir/OpenMPTryFlag.cpp.obj -o cmTC_41193.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_41193.lib -Xlinker /pdb:cmTC_41193.pdb -Xlinker /version:0.0   -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames  && cd ."
+        lld-link: error: undefined symbol: omp_get_max_threads
+        >>> referenced by C:\\Users\\euany\\OneDrive\\Documents\\3DG-volpt\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ovcl8x\\OpenMPTryFlag.cpp:5
+        >>>               CMakeFiles/cmTC_41193.dir/OpenMPTryFlag.cpp.obj:(main)
+        clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+        ninja: build stopped: subcommand failed.
+        
+      exitCode: 1
+...
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Windows - 10.0.26100 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      MSBuild version 17.12.12+1cce77968 for .NET Framework
+      Build started 2025-07-09 4:42:03 PM.
+      
+      Project "C:\\Users\\euany\\OneDrive\\Documents\\3DG-volpt\\build\\CMakeFiles\\3.30.1\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+        Creating directory "Debug\\CompilerIdCXX.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        Touching "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+      ClCompile:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX86\\x86\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /Oy- /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TP /analyze- /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX86\\x86\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X86 /SAFESEH Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> C:\\Users\\euany\\OneDrive\\Documents\\3DG-volpt\\build\\CMakeFiles\\3.30.1\\CompilerIdCXX\\CompilerIdCXX.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\Hostx86\\x86\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate".
+      Done Building Project "C:\\Users\\euany\\OneDrive\\Documents\\3DG-volpt\\build\\CMakeFiles\\3.30.1\\CompilerIdCXX\\CompilerIdCXX.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:00.81
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/3.30.1/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-3c2sc6"
+      binary: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-3c2sc6"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /GR /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:X86"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-3c2sc6'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_25a7d.vcxproj /p:Configuration=Debug /p:Platform=win32 /p:VisualStudioVersion=17.0 /v:n
+        MSBuild version 17.12.12+1cce77968 for .NET Framework
+        Build started 2025-07-09 4:42:04 PM.
+        
+        Project "C:\\Users\\euany\\OneDrive\\Documents\\3DG-volpt\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3c2sc6\\cmTC_25a7d.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_25a7d.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Creating directory "C:\\Users\\euany\\OneDrive\\Documents\\3DG-volpt\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3c2sc6\\Debug\\".
+          Creating directory "cmTC_25a7d.dir\\Debug\\cmTC_25a7d.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_25a7d.dir\\Debug\\cmTC_25a7d.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_25a7d.dir\\Debug\\cmTC_25a7d.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX86\\x86\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /Oy- /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_25a7d.dir\\Debug\\\\" /Fd"cmTC_25a7d.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /analyze- /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.30\\Modules\\CMakeCXXCompilerABI.cpp"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.42.34436 for x86
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /Oy- /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_25a7d.dir\\Debug\\\\" /Fd"cmTC_25a7d.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /analyze- /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.30\\Modules\\CMakeCXXCompilerABI.cpp"
+          CMakeCXXCompilerABI.cpp
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX86\\x86\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\euany\\OneDrive\\Documents\\3DG-volpt\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3c2sc6\\Debug\\cmTC_25a7d.exe" /INCREMENTAL /ILK:"cmTC_25a7d.dir\\Debug\\cmTC_25a7d.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-3c2sc6/Debug/cmTC_25a7d.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-3c2sc6/Debug/cmTC_25a7d.lib" /MACHINE:X86  /machine:X86 cmTC_25a7d.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_25a7d.vcxproj -> C:\\Users\\euany\\OneDrive\\Documents\\3DG-volpt\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3c2sc6\\Debug\\cmTC_25a7d.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_25a7d.dir\\Debug\\cmTC_25a7d.tlog\\unsuccessfulbuild".
+          Touching "cmTC_25a7d.dir\\Debug\\cmTC_25a7d.tlog\\cmTC_25a7d.lastbuildstate".
+        Done Building Project "C:\\Users\\euany\\OneDrive\\Documents\\3DG-volpt\\build\\CMakeFiles\\CMakeScratch\\TryCompile-3c2sc6\\cmTC_25a7d.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:00.78
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'CXX': C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.42.34433/bin/HostX86/x86/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.42.34433/bin/HostX86/x86/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.42.34436.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+...
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Windows - 10.0.26100 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: C:/Program Files/LLVM/bin/clang++.exe 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.exe"
+      
+      The CXX compiler identification is Clang, found in:
+        C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/3.30.1/CompilerIdCXX/a.exe
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:1243 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:250 (CMAKE_DETERMINE_MSVC_SHOWINCLUDES_PREFIX)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Detecting CXX compiler /showIncludes prefix:
+        
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:1243 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:250 (CMAKE_DETERMINE_MSVC_SHOWINCLUDES_PREFIX)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Detecting CXX compiler /showIncludes prefix:
+        
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-gwealb"
+      binary: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-gwealb"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/Program Files/LLVM/bin/clang-scan-deps.exe"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-O0 -g -Xclang -gcodeview"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-gwealb'
+        
+        Run Build Command(s): C:/Users/euany/OneDrive/Documents/ninja/ninja.exe -v cmTC_daf91
+        [1/2] C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE   -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -MD -MT CMakeFiles/cmTC_daf91.dir/CMakeCXXCompilerABI.cpp.obj -MF CMakeFiles\\cmTC_daf91.dir\\CMakeCXXCompilerABI.cpp.obj.d -o CMakeFiles/cmTC_daf91.dir/CMakeCXXCompilerABI.cpp.obj -c "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp"
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -nostartfiles -nostdlib -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -v  -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_daf91.dir/CMakeCXXCompilerABI.cpp.obj -o cmTC_daf91.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_daf91.lib -Xlinker /pdb:cmTC_daf91.pdb -Xlinker /version:0.0     && cd ."
+        clang version 20.1.7
+        Target: x86_64-pc-windows-msvc
+        Thread model: posix
+        InstalledDir: C:\\Program Files\\LLVM\\bin
+         "C:\\\\Program Files\\\\LLVM\\\\bin\\\\lld-link" -out:cmTC_daf91.exe "-libpath:C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\MSVC\\\\14.42.34433\\\\lib\\\\x64" "-libpath:C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\MSVC\\\\14.42.34433\\\\atlmfc\\\\lib\\\\x64" "-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.22621.0\\\\ucrt\\\\x64" "-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.22621.0\\\\um\\\\x64" "-libpath:C:\\\\Program Files\\\\LLVM\\\\lib\\\\clang\\\\20\\\\lib\\\\windows" -nologo -debug /subsystem:console CMakeFiles/cmTC_daf91.dir/CMakeCXXCompilerABI.cpp.obj /MANIFEST:EMBED /implib:cmTC_daf91.lib /pdb:cmTC_daf91.pdb /version:0.0
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'CXX': C:/Program Files/LLVM/bin/lld-link
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files/LLVM/bin/lld-link" "-v"
+      lld-link: warning: ignoring unknown argument '-v'
+      lld-link: error: no input files
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files/LLVM/bin/lld-link" "-V"
+      lld-link: warning: ignoring unknown argument '-V'
+      lld-link: error: no input files
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files/LLVM/bin/lld-link" "--version"
+      LLD 20.1.7
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/FeatureTesting.cmake:34 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/FeatureTesting.cmake:87 (_record_compiler_features)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Compiler/CMakeCommonCompilerMacros.cmake:124 (_record_compiler_features_cxx)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerSupport.cmake:70 (cmake_record_cxx_compile_features)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:83 (CMAKE_DETERMINE_COMPILER_SUPPORT)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compile features"
+    directories:
+      source: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-y2elkb"
+      binary: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-y2elkb"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/Program Files/LLVM/bin/clang-scan-deps.exe"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-O0 -g -Xclang -gcodeview"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_CXX_FEATURE_TEST"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-y2elkb'
+        
+        Run Build Command(s): C:/Users/euany/OneDrive/Documents/ninja/ninja.exe -v cmTC_62142
+        [1/2] C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE   -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd   -std=c++14 -MD -MT CMakeFiles/cmTC_62142.dir/feature_tests.cxx.obj -MF CMakeFiles\\cmTC_62142.dir\\feature_tests.cxx.obj.d -o CMakeFiles/cmTC_62142.dir/feature_tests.cxx.obj -c C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-y2elkb/feature_tests.cxx
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -nostartfiles -nostdlib -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_62142.dir/feature_tests.cxx.obj -o cmTC_62142.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_62142.lib -Xlinker /pdb:cmTC_62142.pdb -Xlinker /version:0.0   -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames  && cd ."
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/FeatureTesting.cmake:34 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/FeatureTesting.cmake:87 (_record_compiler_features)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Compiler/CMakeCommonCompilerMacros.cmake:132 (_record_compiler_features_cxx)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerSupport.cmake:70 (cmake_record_cxx_compile_features)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:83 (CMAKE_DETERMINE_COMPILER_SUPPORT)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compile features"
+    directories:
+      source: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-wtw8ma"
+      binary: "C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-wtw8ma"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/Program Files/LLVM/bin/clang-scan-deps.exe"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-O0 -g -Xclang -gcodeview"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_CXX_FEATURE_TEST"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-wtw8ma'
+        
+        Run Build Command(s): C:/Users/euany/OneDrive/Documents/ninja/ninja.exe -v cmTC_5e352
+        [1/2] C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE   -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd   -std=c++14 -MD -MT CMakeFiles/cmTC_5e352.dir/feature_tests.cxx.obj -MF CMakeFiles\\cmTC_5e352.dir\\feature_tests.cxx.obj.d -o CMakeFiles/cmTC_5e352.dir/feature_tests.cxx.obj -c C:/Users/euany/OneDrive/Documents/3DG-volpt/build/CMakeFiles/CMakeScratch/TryCompile-wtw8ma/feature_tests.cxx
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -nostartfiles -nostdlib -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_5e352.dir/feature_tests.cxx.obj -o cmTC_5e352.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_5e352.lib -Xlinker /pdb:cmTC_5e352.pdb -Xlinker /version:0.0   -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames  && cd ."
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Windows - 10.0.26100 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      MSBuild version 17.12.12+1cce77968 for .NET Framework
+      Build started 2025-07-09 4:51:19 PM.
+      
+      Project "C:\\Users\\euany\\OneDrive\\Documents\\3DG-vol-renderer\\build\\CMakeFiles\\3.30.1\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+        Creating directory "Debug\\CompilerIdCXX.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        Touching "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+      ClCompile:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX86\\x86\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /Oy- /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TP /analyze- /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX86\\x86\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X86 /SAFESEH Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> C:\\Users\\euany\\OneDrive\\Documents\\3DG-vol-renderer\\build\\CMakeFiles\\3.30.1\\CompilerIdCXX\\CompilerIdCXX.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\Hostx86\\x86\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate".
+      Done Building Project "C:\\Users\\euany\\OneDrive\\Documents\\3DG-vol-renderer\\build\\CMakeFiles\\3.30.1\\CompilerIdCXX\\CompilerIdCXX.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:00.51
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        C:/Users/euany/OneDrive/Documents/3DG-vol-renderer/build/CMakeFiles/3.30.1/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "C:/Users/euany/OneDrive/Documents/3DG-vol-renderer/build/CMakeFiles/CMakeScratch/TryCompile-qu3tv2"
+      binary: "C:/Users/euany/OneDrive/Documents/3DG-vol-renderer/build/CMakeFiles/CMakeScratch/TryCompile-qu3tv2"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /GR /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:X86"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/euany/OneDrive/Documents/3DG-vol-renderer/build/CMakeFiles/CMakeScratch/TryCompile-qu3tv2'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_e96df.vcxproj /p:Configuration=Debug /p:Platform=win32 /p:VisualStudioVersion=17.0 /v:n
+        MSBuild version 17.12.12+1cce77968 for .NET Framework
+        Build started 2025-07-09 4:51:20 PM.
+        
+        Project "C:\\Users\\euany\\OneDrive\\Documents\\3DG-vol-renderer\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qu3tv2\\cmTC_e96df.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_e96df.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Creating directory "C:\\Users\\euany\\OneDrive\\Documents\\3DG-vol-renderer\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qu3tv2\\Debug\\".
+          Creating directory "cmTC_e96df.dir\\Debug\\cmTC_e96df.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_e96df.dir\\Debug\\cmTC_e96df.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_e96df.dir\\Debug\\cmTC_e96df.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX86\\x86\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /Oy- /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_e96df.dir\\Debug\\\\" /Fd"cmTC_e96df.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /analyze- /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.30\\Modules\\CMakeCXXCompilerABI.cpp"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.42.34436 for x86
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /Oy- /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_e96df.dir\\Debug\\\\" /Fd"cmTC_e96df.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /analyze- /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.30\\Modules\\CMakeCXXCompilerABI.cpp"
+          CMakeCXXCompilerABI.cpp
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX86\\x86\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\euany\\OneDrive\\Documents\\3DG-vol-renderer\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qu3tv2\\Debug\\cmTC_e96df.exe" /INCREMENTAL /ILK:"cmTC_e96df.dir\\Debug\\cmTC_e96df.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/euany/OneDrive/Documents/3DG-vol-renderer/build/CMakeFiles/CMakeScratch/TryCompile-qu3tv2/Debug/cmTC_e96df.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/euany/OneDrive/Documents/3DG-vol-renderer/build/CMakeFiles/CMakeScratch/TryCompile-qu3tv2/Debug/cmTC_e96df.lib" /MACHINE:X86  /machine:X86 cmTC_e96df.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_e96df.vcxproj -> C:\\Users\\euany\\OneDrive\\Documents\\3DG-vol-renderer\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qu3tv2\\Debug\\cmTC_e96df.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_e96df.dir\\Debug\\cmTC_e96df.tlog\\unsuccessfulbuild".
+          Touching "cmTC_e96df.dir\\Debug\\cmTC_e96df.tlog\\cmTC_e96df.lastbuildstate".
+        Done Building Project "C:\\Users\\euany\\OneDrive\\Documents\\3DG-vol-renderer\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qu3tv2\\cmTC_e96df.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:00.46
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'CXX': C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.42.34433/bin/HostX86/x86/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.42.34433/bin/HostX86/x86/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.42.34436.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+...
