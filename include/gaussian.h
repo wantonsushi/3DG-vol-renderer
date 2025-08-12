@@ -21,6 +21,7 @@ private:
     float norm;
     
     Eigen::Matrix3f whitening_T;
+    Eigen::Matrix3f whitening_T_inv;
 
 public:
     Gaussian(
@@ -45,6 +46,7 @@ public:
         sqrt_inv_lambda(2,2) = 1.0f / std::sqrt(eigvals[2]);
 
         whitening_T = sqrt_inv_lambda * eigvecs.transpose();
+        whitening_T_inv = whitening_T.inverse();
     }
 
     float evaluate(const Eigen::Vector3f& x) const {
@@ -119,35 +121,50 @@ public:
     }
 
     // alternative ray-gaussian intersection by using a whitening transform
-    // after testing, this is ~1.44x faster
+    // NOT WORKING, slower anyways...
     bool intersect_sphere_map(const Ray& ray, float& t_enter, float& t_exit) const {
         // shift origin into Gaussian's local space
-        Eigen::Vector3f p = ray.origin - mean;
-        Eigen::Vector3f d = ray.direction;
+        Eigen::Vector3f p_local = ray.origin - mean;
+        Eigen::Vector3f d_local = ray.direction;
 
         // get whitening transform to sphere space
         // tranformation precomputed for efficiency (see CTOR)
 
-        Eigen::Vector3f p_sphere = whitening_T * p;
-        Eigen::Vector3f d_sphere = whitening_T * d;
+        Eigen::Vector3f p_sphere = whitening_T * p_local;
+        Eigen::Vector3f d_sphere = whitening_T * d_local;
 
         // standard sphere intersection
-        float t_enter_s, t_exit_s;
-        {
-            Eigen::Vector3f L = -p_sphere;
-            float tca = L.dot(d_sphere);
-            float d2  = L.squaredNorm() - tca * tca;
-            float r2  = R * R;
-            if (d2 > r2) return false;
-            float thc = std::sqrt(r2 - d2);
-            t_enter_s = tca - thc;
-            t_exit_s  = tca + thc;
-            if (t_exit_s < 0.0f) return false;
-        }
+        Eigen::Vector3f L = -p_sphere;
+        float tca = L.dot(d_sphere);
+        float d2 = L.squaredNorm() - tca * tca;
+        float r2 = R * R;
+        if (d2 > r2) return false;
+        float thc = std::sqrt(r2 - d2);
+        float t0_s = tca - thc;
+        float t1_s = tca + thc;
+        if (t1_s < 0.0f) return false;
 
-        // clamp entry/exit to be in front of ray origin
-        t_enter = (t_enter_s >= 0.0f) ? t_enter_s : 0.0f;
-        t_exit  = t_exit_s;
+        if (t0_s > t1_s) std::swap(t0_s, t1_s);
+
+        // intersection points in sphere space
+        Eigen::Vector3f p0_s = p_sphere + t0_s * d_sphere;
+        Eigen::Vector3f p1_s = p_sphere + t1_s * d_sphere;
+
+        // map intersection points back to Gaussian/world space
+        Eigen::Vector3f p0 = mean + whitening_T_inv * p0_s;
+        Eigen::Vector3f p1 = mean + whitening_T_inv * p1_s;
+
+        // compute t along original ray: project (p - ray.origin) onto ray.direction
+        float t0 = (p0 - ray.origin).dot(ray.direction);
+        float t1 = (p1 - ray.origin).dot(ray.direction);
+
+        if (t1 < 0.0f) return false; // both behind
+
+        if (t0 > t1) std::swap(t0, t1);
+
+        t_enter = (t0 >= 0.0f) ? t0 : 0.0f;
+        t_exit = t1;
+
         return true;
     }
 };
