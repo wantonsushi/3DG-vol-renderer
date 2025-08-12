@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scene version="3.0.0">
+
+  <integrator type="volpath">
+    <integer name="max_depth" value="2"/>
+  </integrator>
+
+  <sensor type="perspective">
+    <transform name="to_world">
+      <lookat origin="0,1,6" target="0,1,0" up="0,1,0"/>
+    </transform>
+    <float name="fov" value="27.1"/>
+    <sampler type="independent">
+      <integer name="sample_count" value="1"/>
+    </sampler>
+    <film type="hdrfilm">
+      <integer name="width" value="512"/>
+      <integer name="height" value="512"/>
+      <rfilter type="box"/>
+    </film>
+  </sensor>
+
+  <emitter type="constant">
+    <rgb name="radiance" value="0.53, 0.81, 0.92"/>
+  </emitter>
+
+  <emitter type="point">
+    <point name="position" x="0" y="4" z="0"/>
+    <rgb name="intensity" value="20.0"/>
+  </emitter>
+
+  <medium id="vol" type="homogeneous">
+    <rgb name="albedo" value="0.875"/>
+    <rgb name="sigma_t" value="0.8"/>
+    <float name="scale"  value="2.2"/>
+    <phase name="phase" type="isotropic"/>
+    <boolean name="sample_emitters" value="true"/>
+  </medium>
+
+  <shape type="sphere">
+    <point name="center" x="0" y="1" z="0"/>
+    <float name="radius" value="1"/>
+    <bsdf type="null"/>
+    <ref name="interior" id="vol"/>
+  </shape>
+
+</scene>
