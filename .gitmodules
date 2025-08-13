@@ -1,0 +1,6 @@
+[submodule "extern/eigen-3.4.0"]
+	path = extern/eigen-3.4.0
+	url = https://gitlab.com/libeigen/eigen.git
+[submodule "extern/gif-h"]
+	path = extern/gif-h
+	url = https://github.com/charlietangora/gif-h.git
