@@ -25,7 +25,7 @@
 
   <emitter type="point">
     <point name="position" x="0" y="4" z="0"/>
-    <rgb name="intensity" value="90.0"/>
+    <rgb name="intensity" value="35.0"/>
   </emitter>
 
   <medium id="vol" type="homogeneous">

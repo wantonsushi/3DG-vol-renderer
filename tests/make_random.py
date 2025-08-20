@@ -38,7 +38,7 @@ def generate_gaussian():
     czz = cov[2, 2]
 
     density = np.random.uniform(0.2, 0.5)
-    albedo = np.random.uniform(0.5, 1.0)
+    albedo = np.random.uniform(0.25, 0.95)
     er = np.random.uniform(0.0, 1.0)
     eg = np.random.uniform(0.0, 1.0)
     eb = np.random.uniform(0.0, 1.0)

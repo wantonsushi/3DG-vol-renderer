@@ -22,8 +22,8 @@ public:
         std::vector<PrimitiveHitEvent> events;
         for (size_t i = 0; i < gaussians.size(); ++i) {
             float t0, t1;
-            //if (gaussians[i].intersect_sphere_map(ray, t0, t1)) {
-            if (gaussians[i].intersect(ray, t0, t1)) {
+            if (gaussians[i].intersect_whitening(ray, t0, t1)) {
+            //if (gaussians[i].intersect_direct(ray, t0, t1)) {
                 if (t0 >= 0.0f) events.push_back({ t0, true,  i });
                 if (t1 >= 0.0f) events.push_back({ t1, false, i });
             }

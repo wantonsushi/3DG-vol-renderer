@@ -21,7 +21,8 @@ int main() {
     const float FOV = 0.25f * std::numbers::pi;
 
     // Load scene
-    Scene scene = Scene::load_GMM("../scenes/gaussians/2_gaussian.txt");
+    //Scene scene = Scene::load_SMM("../scenes/spheres/1_spheres.txt");
+    Scene scene = Scene::load_GMM("../scenes/gaussians/many_lights.txt");
     const float step_size = 0.01f;
 
 #ifndef MAKE_GIF
@@ -31,7 +32,7 @@ int main() {
     auto camera = make_shared<Pinhole_Camera>(camera_pos, view_dir, FOV);
     //auto camera = make_shared<Orthographic_Camera>(camera_pos, view_dir);
 
-    auto integrator = make_unique<TestIntegrator>(camera);
+    auto integrator = make_unique<MultiScatterGaussians>(camera);
 
     auto start = chrono::high_resolution_clock::now();
     integrator->render(scene, image);
@@ -40,7 +41,7 @@ int main() {
     chrono::duration<double> elapsed = end - start;
     cout << "Render time: " << elapsed.count() << " seconds" << endl;
 
-    image.make_PPM("some_test.ppm");
+    image.make_PPM("image.ppm");
 
 #else
     const int num_frames = 120;

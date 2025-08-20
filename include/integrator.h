@@ -539,7 +539,7 @@ float solve_distance_bisection(
     const std::vector<size_t>& active_idxs,
     float target_tau,
     const GaussianMixtureModel &gmm,
-    int max_iters = 8
+    int max_iters = 15
 ) {
     float a = ta, b = tb;
     for (int i = 0; i < max_iters; ++i) {
@@ -560,7 +560,7 @@ private:
 public:
     FreeFlightGaussians(
         const std::shared_ptr<Camera>& cam,
-        int   num_samples = 512
+        int   num_samples = 1024
     ) : Integrator(cam), num_samples(num_samples) {}
 
     void render(const Scene& scene, Image& image) override {
@@ -706,7 +706,7 @@ private:
 public:
     MultiScatterGaussians(
         const std::shared_ptr<Camera>& cam,
-        int samples = 2048,
+        int samples = 1024,
         int min_bounces = 5
     ) : Integrator(cam), num_samples(samples), min_scatter(min_bounces) {}
 

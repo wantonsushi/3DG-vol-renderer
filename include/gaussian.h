@@ -45,8 +45,7 @@ public:
         sqrt_inv_lambda(1,1) = 1.0f / std::sqrt(eigvals[1]);
         sqrt_inv_lambda(2,2) = 1.0f / std::sqrt(eigvals[2]);
 
-        whitening_T = sqrt_inv_lambda * eigvecs.transpose();
-        whitening_T_inv = whitening_T.inverse();
+        whitening_T = sqrt_inv_lambda * eigvecs.transpose() * (1.0f / R);
     }
 
     float evaluate(const Eigen::Vector3f& x) const {
@@ -59,17 +58,20 @@ public:
     float get_albedo() const { return albedo; }                                   // get single scattering scattering albedo
 
     // analytic ray-gaussian intersection by solving ellipsoid equation
-    bool intersect(const Ray& ray, float& t_enter, float& t_exit) const {
+    bool intersect_direct(const Ray& ray, float& t_enter, float& t_exit) const {
         // shift origin into Gaussian's local space
         Eigen::Vector3f p = ray.origin - mean;
 
         // solving Ellipsoid equation is a quadratic:
         // inverse covariance matrix precomputed for efficiency (see CTOR)
 
+        Eigen::Vector3f Md = inv_cov * ray.direction; 
+        Eigen::Vector3f Mp = inv_cov * p;        
+
         // quadratic coefficients
-        float A = ray.direction.transpose() * inv_cov * ray.direction;
-        float B = 2.0f * p.transpose() * inv_cov * ray.direction;
-        float C = p.transpose() * inv_cov * p - (R * R);
+        float A = ray.direction.dot(Md);
+        float B = 2.0f * p.dot(Md);       
+        float C = p.dot(Mp) - (R * R); 
 
         // solve quadratic equation
         float discriminant = B * B - 4.0f * A * C;
@@ -89,7 +91,7 @@ public:
         // discard intersections completely behind ray
         if (t1 < 0.0f) return false;
 
-        // clamp entry/exit to be in front of ray origin
+        // clamp enter to zero if behind origin
         t_enter = (t0 >= 0.0f) ? t0 : 0.0f;
         t_exit  = t1;
 
@@ -98,72 +100,63 @@ public:
 
     // compute optical depth over the gaussian
     float optical_depth(const Ray& ray, float t0, float t1) const {
-        // shift to local coords
+        // shift origin into Gaussian's local space
         Eigen::Vector3f p = ray.origin - mean;
-        Eigen::Vector3f d  = ray.direction;
 
         // set up quadratic: a t^2 + b t + c
-        float a = d.transpose() * inv_cov * d;
-        float b = 2.0f * p.transpose() * inv_cov * d;
-        float c = p.transpose() * inv_cov * p;
+        float A = ray.direction.transpose() * inv_cov * ray.direction;
+        float B = 2.0f * p.transpose() * inv_cov * ray.direction;
+        float C = p.transpose() * inv_cov * p;
 
         // prefactor:
-        float pref = density * norm * std::sqrt(std::numbers::pi / (2.0f * a));
+        float pref = density * norm * std::sqrt(std::numbers::pi / (2.0f * A));
 
         auto F = [&](float t) {
             // argument of erf:
-            float arg = (b + 2.0f * a * t) / (2.0f * std::sqrt(2.0f * a));
+            float arg = (B + 2.0f * A * t) / (2.0f * std::sqrt(2.0f * A));
             return std::erf(arg);
         };
 
         // compute difference of erf
-        return pref * std::exp(-0.5f * (c - b*b/(4.0f*a))) * (F(t1) - F(t0));
+        return pref * std::exp(-0.5f * (C - B*B/(4.0f*A))) * (F(t1) - F(t0));
     }
 
     // alternative ray-gaussian intersection by using a whitening transform
-    // NOT WORKING, slower anyways...
-    bool intersect_sphere_map(const Ray& ray, float& t_enter, float& t_exit) const {
-        // shift origin into Gaussian's local space
-        Eigen::Vector3f p_local = ray.origin - mean;
-        Eigen::Vector3f d_local = ray.direction;
+    bool intersect_whitening(const Ray& ray, float& t_enter, float& t_exit) const {
+        // transform ray into whitened space
+        // whitening transform maps R*stddev ellipsoid -> unit sphere
+        // precomputed for efficiency (see CTOR)
 
-        // get whitening transform to sphere space
-        // tranformation precomputed for efficiency (see CTOR)
+        Eigen::Vector3f o_local = ray.origin - mean;
+        Eigen::Vector3f o_w = whitening_T * o_local;
+        Eigen::Vector3f d_w = whitening_T * ray.direction;
 
-        Eigen::Vector3f p_sphere = whitening_T * p_local;
-        Eigen::Vector3f d_sphere = whitening_T * d_local;
+        // quadratic coefficients
+        float A = d_w.dot(d_w);
+        float B = 2.0f * o_w.dot(d_w);
+        float C = o_w.dot(o_w) - 1.0f;
 
-        // standard sphere intersection
-        Eigen::Vector3f L = -p_sphere;
-        float tca = L.dot(d_sphere);
-        float d2 = L.squaredNorm() - tca * tca;
-        float r2 = R * R;
-        if (d2 > r2) return false;
-        float thc = std::sqrt(r2 - d2);
-        float t0_s = tca - thc;
-        float t1_s = tca + thc;
-        if (t1_s < 0.0f) return false;
+        // solve quadratic equation
+        float discriminant = B * B - 4.0f * A * C;
+        if (discriminant < 0.0f) {
+            return false; // no intersection
+        }
 
-        if (t0_s > t1_s) std::swap(t0_s, t1_s);
+        float sqrtD = std::sqrt(discriminant);
 
-        // intersection points in sphere space
-        Eigen::Vector3f p0_s = p_sphere + t0_s * d_sphere;
-        Eigen::Vector3f p1_s = p_sphere + t1_s * d_sphere;
+        // two solutions for t
+        float t0 = (-B - sqrtD) / (2.0f * A);
+        float t1 = (-B + sqrtD) / (2.0f * A);
 
-        // map intersection points back to Gaussian/world space
-        Eigen::Vector3f p0 = mean + whitening_T_inv * p0_s;
-        Eigen::Vector3f p1 = mean + whitening_T_inv * p1_s;
-
-        // compute t along original ray: project (p - ray.origin) onto ray.direction
-        float t0 = (p0 - ray.origin).dot(ray.direction);
-        float t1 = (p1 - ray.origin).dot(ray.direction);
-
-        if (t1 < 0.0f) return false; // both behind
-
+        // ensure t0 <= t1
         if (t0 > t1) std::swap(t0, t1);
 
+        // discard intersections completely behind ray
+        if (t1 < 0.0f) return false;
+
+        // clamp enter to zero if behind origin
         t_enter = (t0 >= 0.0f) ? t0 : 0.0f;
-        t_exit = t1;
+        t_exit  = t1;
 
         return true;
     }
