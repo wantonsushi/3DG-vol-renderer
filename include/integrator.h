@@ -6,6 +6,7 @@
 #include "scene.h"
 #include "image.h"
 #include "camera.h"
+#include "distance_solvers.h"
 
 #include <random>
 #include <iostream>
@@ -527,31 +528,10 @@ public:
     }
 };
 
+
 // ============================================================================================
 //  FREE-FLIGHT SAMPLING GAUSSIANS (SINGLE SCATTERING)
 // ============================================================================================
-
-// bisection solver to find t in [ta, tb] so that
-// accumulated optical depth from ta to t equals target_tau.
-float solve_distance_bisection(
-    const Ray &ray,
-    float ta, float tb,
-    const std::vector<size_t>& active_idxs,
-    float target_tau,
-    const GaussianMixtureModel &gmm,
-    int max_iters = 15
-) {
-    float a = ta, b = tb;
-    for (int i = 0; i < max_iters; ++i) {
-        float m = 0.5f * (a + b);
-        float tau = 0.0f;
-        for (auto idx : active_idxs)
-            tau += gmm.gaussians[idx].optical_depth(ray, ta, m);
-        if (tau < target_tau) a = m;
-        else               b = m;
-    }
-    return 0.5f * (a + b);
-}
 
 class FreeFlightGaussians : public Integrator {
 private:
@@ -571,7 +551,14 @@ public:
                 Eigen::Vector3f pixel_L = Eigen::Vector3f::Zero();
 
                 for (int si = 0; si < num_samples; ++si) {
-                    float u = (x + rand01())/W, v = (y + rand01())/H;
+                    int n = int(std::sqrt(num_samples)); // ASSUMING num_samples is power of 2
+                    int sx = si % n;
+                    int sy = si / n;
+
+                    // stratified sample inside pixel
+                    float u = (x + (sx + rand01()) / n) / W;
+                    float v = (y + (sy + rand01()) / n) / H;
+                    
                     Ray ray = camera->sample_ray({u,v});
                     auto events = scene.intersect_events(ray);
                     if (events.empty()) {
@@ -600,12 +587,7 @@ public:
                                          .optical_depth(ray, t_prev, t_evt);
                             if (acc_tau + seg_tau >= target_tau) {
                                 // exceeded! now find exact distance within segment
-                                float need = target_tau - acc_tau;
-                                t_scatter = solve_distance_bisection(
-                                    ray, t_prev, t_evt,
-                                    active_idxs, need,
-                                    scene.gmm->at(0)
-                                );
+                                t_scatter = solve_distance(ray, t_prev, t_evt, active_idxs, acc_tau, seg_tau, target_tau, scene.gmm->at(0));
                                 break;
                             }
                         acc_tau += seg_tau;
@@ -634,48 +616,18 @@ public:
                         const auto &L = scene.lights[li];
                         Eigen::Vector3f wi = (L.position - pos).normalized();
                         float dist = (L.position - pos).norm();
+
                         // get analytic Tr to light
                         Ray shadow(pos, wi);
-                        auto shadow_ev = scene.intersect_events(shadow);
-                        for (size_t i=0;i<active.size();++i)
-                            if (active[i])
-                                shadow_ev.insert(shadow_ev.begin(), {0.0f,true,i});
-                        
-                        float Tr = 1.0f, t_prev = 0.0f, t_next;
-                        std::vector<bool> mask = active;
-                        for (auto &e : shadow_ev) {
-                            t_next = std::min(e.t, dist);
-                            std::vector<size_t> m_idxs;
-                            for (size_t i=0 ; i < mask.size(); ++i)
-                                if (mask[i]) m_idxs.push_back(i);
-                            Tr *= scene.gmm->at(0)
-                                     .transmittance_over_segment(shadow, t_prev, t_next, m_idxs);
-                            if (e.t > dist) break;
-                            mask[e.index] = e.entering;
-                            t_prev = t_next;
-                        }
+                        float Tr = scene.gmm->at(0).transmittance_up_to(shadow, dist);
                         Li = Tr * L.intensity / (dist*dist);
                     } else {
                         // one env-sample: uniform dir
                         Eigen::Vector3f wi = sample_uniform_direction();
                         Ray eray(pos, wi);
-                        auto shadow_ev = scene.intersect_events(eray);
-                        for (size_t i=0;i<active.size();++i)
-                            if (active[i])
-                                shadow_ev.insert(shadow_ev.begin(), {0.0f,true,i});
                         
-                        float Tr = 1.0f, t_prev = 0.0f, t_next;
-                        std::vector<bool> mask = active;
-                        for (auto &e : shadow_ev) {
-                            t_next = e.t;
-                            std::vector<size_t> m_idxs;
-                            for (size_t i=0; i < mask.size(); ++i)
-                                if (mask[i]) m_idxs.push_back(i);
-                            Tr *= scene.gmm->at(0)
-                                     .transmittance_over_segment(eray, t_prev, t_next, m_idxs);
-                            mask[e.index] = e.entering;
-                            t_prev = t_next;
-                        }
+                        float inf = std::numeric_limits<float>::infinity();
+                        float Tr = scene.gmm->at(0).transmittance_up_to(eray, inf);
                         Li = Tr * scene.env_color * (4.0f * std::numbers::pi);
                     }
 
@@ -718,8 +670,14 @@ public:
                 Eigen::Vector3f pixel_L = Eigen::Vector3f::Zero();
                 
                 for (int si = 0; si < num_samples; ++si) {
-                    float u = (x + rand01()) / W;
-                    float v = (y + rand01()) / H;
+                    int n = int(std::sqrt(num_samples)); // ASSUMING num_samples is power of 2
+                    int sx = si % n;
+                    int sy = si / n;
+
+                    // stratified sample inside pixel
+                    float u = (x + (sx + rand01()) / n) / W;
+                    float v = (y + (sy + rand01()) / n) / H;
+
                     Ray ray = camera->sample_ray({u, v});
                     
                     Eigen::Vector3f throughput = Eigen::Vector3f::Ones();
@@ -758,8 +716,7 @@ public:
 
                             if (acc_tau + seg_tau >= target_tau) {
                                 // exceeded: find exact distance within segment
-                                float need = target_tau - acc_tau;
-                                t_scatter = solve_distance_bisection(ray, t_prev, t_evt, active_idxs, need, scene.gmm->at(0));
+                                t_scatter = solve_distance(ray, t_prev, t_evt, active_idxs, acc_tau, seg_tau, target_tau, scene.gmm->at(0));
                                 break;
                             }
                             acc_tau += seg_tau;
@@ -790,48 +747,17 @@ public:
                             const auto &L = scene.lights[li];
                             Eigen::Vector3f wi = (L.position - pos).normalized();
                             float dist = (L.position - pos).norm();
+
                             // get analytic Tr to light
                             Ray shadow(pos, wi);
-                            auto shadow_ev = scene.intersect_events(shadow);
-                            for (size_t i=0;i<active.size();++i)
-                                if (active[i])
-                                    shadow_ev.insert(shadow_ev.begin(), {0.0f,true,i});
-                            
-                            float Tr = 1.0f, t_prev = 0.0f, t_next;
-                            std::vector<bool> mask = active;
-                            for (auto &e : shadow_ev) {
-                                t_next = std::min(e.t, dist);
-                                std::vector<size_t> m_idxs;
-                                for (size_t i=0 ; i < mask.size(); ++i)
-                                    if (mask[i]) m_idxs.push_back(i);
-                                Tr *= scene.gmm->at(0)
-                                        .transmittance_over_segment(shadow, t_prev, t_next, m_idxs);
-                                if (e.t > dist) break;
-                                mask[e.index] = e.entering;
-                                t_prev = t_next;
-                            }
+                            float Tr = scene.gmm->at(0).transmittance_up_to(shadow, dist);
                             Li = Tr * L.intensity / (dist * dist);
                         } else {
                             // one env-sample: uniform dir
                             Eigen::Vector3f wi = sample_uniform_direction();
                             Ray eray(pos, wi);
-                            auto shadow_ev = scene.intersect_events(eray);
-                            for (size_t i=0;i<active.size();++i)
-                                if (active[i])
-                                    shadow_ev.insert(shadow_ev.begin(), {0.0f,true,i});
-                            
-                            float Tr = 1.0f, t_prev = 0.0f, t_next;
-                            std::vector<bool> mask = active;
-                            for (auto &e : shadow_ev) {
-                                t_next = e.t;
-                                std::vector<size_t> m_idxs;
-                                for (size_t i=0; i < mask.size(); ++i)
-                                    if (mask[i]) m_idxs.push_back(i);
-                                Tr *= scene.gmm->at(0)
-                                        .transmittance_over_segment(eray, t_prev, t_next, m_idxs);
-                                mask[e.index] = e.entering;
-                                t_prev = t_next;
-                            }
+                            float inf = std::numeric_limits<float>::infinity();
+                            float Tr = scene.gmm->at(0).transmittance_up_to(eray, inf);
                             Li = Tr * scene.env_color * (4.0f * std::numbers::pi);
                         }
 

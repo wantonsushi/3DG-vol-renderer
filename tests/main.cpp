@@ -21,8 +21,8 @@ int main() {
     const float FOV = 0.25f * std::numbers::pi;
 
     // Load scene
-    //Scene scene = Scene::load_SMM("../scenes/spheres/1_spheres.txt");
-    Scene scene = Scene::load_GMM("../scenes/gaussians/many_lights.txt");
+    // Scene scene = Scene::load_SMM("../scenes/spheres/1_spheres.txt");
+    Scene scene = Scene::load_GMM("../scenes/gaussians/250_random.txt");
     const float step_size = 0.01f;
 
 #ifndef MAKE_GIF

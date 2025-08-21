@@ -22,8 +22,8 @@ public:
         std::vector<PrimitiveHitEvent> events;
         for (size_t i = 0; i < gaussians.size(); ++i) {
             float t0, t1;
-            if (gaussians[i].intersect_whitening(ray, t0, t1)) {
-            //if (gaussians[i].intersect_direct(ray, t0, t1)) {
+            //if (gaussians[i].intersect_whitening(ray, t0, t1)) {
+            if (gaussians[i].intersect_direct(ray, t0, t1)) {
                 if (t0 >= 0.0f) events.push_back({ t0, true,  i });
                 if (t1 >= 0.0f) events.push_back({ t1, false, i });
             }
@@ -75,5 +75,28 @@ public:
             optical_depth_sum += gaussians[i].optical_depth(ray, t0, t1);
         }
         return std::exp(-optical_depth_sum);
+    }
+
+    // much faster transmittance along ray from t=0 to t = tmax
+    // no sorting, for single-scatter shadow transmittance/next-event-estimation
+    float transmittance_up_to(const Ray &ray, float tmax) const {
+        if (tmax <= 0.0f) return 1.0f;
+
+        double optical_depth_sum = 0.0; // use double for accumulate safety
+        for (size_t i = 0; i < gaussians.size(); ++i) {
+            float g_t0, g_t1;
+            // only consider this gaussian if it intersects the ray
+            if (!gaussians[i].intersect_direct(ray, g_t0, g_t1))
+                continue;
+
+            // clip to [0, tmax]
+            float a = std::max(0.0f, g_t0);
+            float b = std::min(tmax, g_t1);
+            if (b > a) {
+                optical_depth_sum += gaussians[i].optical_depth(ray, a, b);
+            }
+        }
+
+        return std::exp(-float(optical_depth_sum));
     }
 };
