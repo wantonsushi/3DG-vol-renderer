@@ -1,5 +1,6 @@
 
 #include "integrator.h"
+#include "test_integrators.h"
 #include "gif.h"
 
 #include <chrono>
@@ -32,7 +33,7 @@ int main() {
     auto camera = make_shared<Pinhole_Camera>(camera_pos, view_dir, FOV);
     //auto camera = make_shared<Orthographic_Camera>(camera_pos, view_dir);
 
-    auto integrator = make_unique<MultiScatterGaussians>(camera);
+    auto integrator = make_unique<FreeFlightGaussians>(camera);
 
     auto start = chrono::high_resolution_clock::now();
     integrator->render(scene, image);

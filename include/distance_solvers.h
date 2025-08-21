@@ -180,8 +180,5 @@ float solve_distance(
         std::cerr << "analytic failed" << std::endl;
     }
     return solve_distance_newton_raphson(ray, ta, tb, active_idxs, remaining_tau, gmm);
-
-#else
-    #error "Must define a distance solver"
 #endif
 }
