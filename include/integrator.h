@@ -8,15 +8,7 @@
 #include "camera.h"
 #include "distance_solvers.h"
 
-#include <random>
 #include <iostream>
-
-// generate random xi~U(0,1)
-inline float rand01() {
-    thread_local static std::mt19937 gen{ std::random_device{}() };
-    thread_local static std::uniform_real_distribution<float> dist(0.0f, 1.0f);
-    return dist(gen);
-}
 
 // generate a uniform random direction over the unit sphere
 inline Eigen::Vector3f sample_uniform_direction() {
@@ -270,8 +262,8 @@ public:
     {
         std::cout << "Gaussian free-flight renderer (single-scattering)" << std::endl;
         std::cout << "Distance Solver Method: "
-        #if defined(HOMOGENEOUS)
-            << "Homogenous Approximation" << std::endl;
+        #if defined(UNIFORM)
+            << "Uniform Approximation" << std::endl;
         #elif defined(BISECTION)
             << "Bisection" << std::endl;
         #elif defined(NEWTON)
@@ -329,7 +321,7 @@ public:
                                          .optical_depth(ray, t_prev, t_evt);
                             if (acc_tau + seg_tau >= target_tau) {
                                 // exceeded! now find exact distance within segment
-                                t_scatter = solve_distance(ray, t_prev, t_evt, active_idxs, acc_tau, seg_tau, target_tau, scene.gmm->at(0));
+                                t_scatter = solve_distance(ray, t_prev, t_evt, active_idxs, target_tau - acc_tau, scene.gmm->at(0));
                                 break;
                             }
                         acc_tau += seg_tau;
@@ -406,8 +398,8 @@ public:
     {
         std::cout << "Gaussian free-flight renderer (multi-scattering)" << std::endl;
         std::cout << "Distance Solver Method: "
-        #if defined(HOMOGENEOUS)
-            << "Homogenous Approximation" << std::endl;
+        #if defined(UNIFORM)
+            << "UNIFORM Approximation" << std::endl;
         #elif defined(BISECTION)
             << "Bisection" << std::endl;
         #elif defined(NEWTON)
@@ -475,7 +467,7 @@ public:
 
                             if (acc_tau + seg_tau >= target_tau) {
                                 // exceeded: find exact distance within segment
-                                t_scatter = solve_distance(ray, t_prev, t_evt, active_idxs, acc_tau, seg_tau, target_tau, scene.gmm->at(0));
+                                t_scatter = solve_distance(ray, t_prev, t_evt, active_idxs, target_tau - acc_tau, scene.gmm->at(0));
                                 break;
                             }
                             acc_tau += seg_tau;

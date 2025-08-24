@@ -4,6 +4,14 @@
 #include "ray.h"
 
 #include <vector>
+#include <random>
+
+// generate random xi~U(0,1)
+inline float rand01() {
+    thread_local static std::mt19937 gen{ std::random_device{}() };
+    thread_local static std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+    return dist(gen);
+}
 
 // ============================================================================================
 //  DISTANCE SOLVERS:
@@ -12,14 +20,14 @@
 // ============================================================================================
 
 // bisection solver
-float solve_distance_bisection(
+inline float solve_distance_bisection(
     const Ray &ray,
     float ta, float tb,
     const std::vector<size_t>& active_idxs,
     float target,
     const GaussianMixtureModel &gmm,
     int max_iters = 15,
-    float tol_tau = 1e-6f           // tolerance on optical depth residual
+    float tol = 1e-6f           // tolerance on optical depth residual
 ) {
     float a = ta, b = tb;
 
@@ -30,7 +38,7 @@ float solve_distance_bisection(
             tau += gmm.gaussians[idx].optical_depth(ray, ta, m);
         
         float f = tau - target;
-        if (std::fabs(f) <= tol_tau) {
+        if (std::fabs(f) <= tol) {
             //std::cerr << "stopped early on iter: " << i << std::endl;
             return m;
         }
@@ -46,8 +54,10 @@ float solve_distance_bisection(
     return 0.5f * (a + b);
 }
 
+// ============================================================================================
+
 // Newton-Raphson solver with fallback to bisection
-float solve_distance_newton_raphson(
+inline float solve_distance_newton_raphson(
     const Ray &ray,
     float ta, float tb,
     const std::vector<size_t>& active_idxs,
@@ -56,7 +66,7 @@ float solve_distance_newton_raphson(
     int max_iters = 8,
     float tol = 1e-6f
 ) {
-    // initial guess: midpoint (paper suggests half the segment length)
+    // initial guess: midpoint (this is what DSYG suggests)
     float a = ta, b = tb;
     float t = 0.5f * (a + b);
 
@@ -76,30 +86,27 @@ float solve_distance_newton_raphson(
             return std::clamp(t, a, b);
         }
 
-        // numeric derivative via central difference (robust when you don't have direct kernel eval)
-        float h = std::max(1e-5f, (b - a) * 1e-6f); // relative small step
+        // numeric derivative via forward difference
+        float h = std::max(1e-5f, (b - a) * 1e-6f);
         float tp = std::min(b, t + h);
-        float tm = std::max(a, t - h);
         float fp = compute_f(tp);
-        float fm = compute_f(tm);
 
-        float deriv = (fp - fm) / (tp - tm);
+        float deriv = (fp - f) / (tp - t);
 
-        // if derivative non-positive, zero, NaN, or too small -> fail and fallback
+        // fallback if derivative non-positive, zero, NaN, or too small (doesn't seem to happen)
         if (!(deriv > 0.0f) || !std::isfinite(deriv) || std::fabs(deriv) < 1e-12f) {
-            // fallback
             //std::cerr << "derivative non-positive, zero, NaN, or too small" << std::endl;
-            return solve_distance_bisection(ray, ta, tb, active_idxs, target_tau, gmm, 15);
+            return solve_distance_bisection(ray, ta, tb, active_idxs, target_tau, gmm);
         }
 
         // Newton step
         float t_next = t - f / deriv;
 
-        // Clip to segment bounds (paper suggests clipping)
+        // fallback if stepped out of segment bounds
         if (!std::isfinite(t_next) || t_next < a || t_next > b) {
-            // If it steps out-of-bounds or becomes invalid -> fallback
             //std::cerr << "stepped out of bounds" << std::endl;
-            return solve_distance_bisection(ray, ta, tb, active_idxs, target_tau, gmm, 15);
+            //t_next = std::clamp(t_next, a, b);
+            return solve_distance_bisection(ray, ta, tb, active_idxs, target_tau, gmm);
         }
 
         // small change -> converged
@@ -114,45 +121,39 @@ float solve_distance_newton_raphson(
 
     // If we exit loop with no convergence -> fallback to bisection
     //std::cerr << "did not converge" << std::endl;
-    return solve_distance_bisection(ray, ta, tb, active_idxs, target_tau, gmm, 15);
+    return solve_distance_bisection(ray, ta, tb, active_idxs, target_tau, gmm);
 }
 
-// Linear-homogeneous approximation over a segment using accumulated tau
-// target_tau = accum_tau + linear interpolation over segment [ta, tb] with total seg_tau
-float solve_distance_homogeneous(
-    float ta, float tb,
-    float accum_tau,           // optical depth accumulated before ta
-    float seg_tau,             // total optical depth of segment [ta, tb]
-    float target_tau          // total optical depth to reach
+// ============================================================================================
+
+// Uniform approximation over critical segment
+inline float solve_distance_uniform(
+    float ta, float tb
 ) {
-    // linear interpolation
-    float t = ta + (tb - ta) * (target_tau - accum_tau) / seg_tau;
-    return std::clamp(t, ta, tb);
+    float u = rand01();
+    return ta + u * (tb - ta);
 }
+
 
 // ========================================================================================================
 
 // Exactly **one** of these must be defined
-// #define BISECTION
-// #define NEWTON
-// #define ANALYTIC_PLUS_BISECTION
- #define ANALYTIC_PLUS_NEWTON
-// define HOMOGENEOUS
+//#define BISECTION
+//#define NEWTON
+//#define ANALYTIC_PLUS_BISECTION
+#define ANALYTIC_PLUS_NEWTON
+//#define UNIFORM
 
 // Abstract distance solver:
-float solve_distance(
+inline float solve_distance(
     const Ray &ray,
     float ta, float tb,
     const std::vector<size_t>& active_idxs,
-    float accum_tau,
-    float seg_tau,
-    float target_tau,
+    float remaining_tau,
     const GaussianMixtureModel &gmm
 ) {
-    float remaining_tau = target_tau - accum_tau;
-
-#if defined(HOMOGENEOUS)
-    return solve_distance_homogeneous(ta, tb, accum_tau, seg_tau, target_tau);
+#if defined(UNIFORM)
+    return solve_distance_uniform(ta, tb);
 
 #elif defined(BISECTION)
     return solve_distance_bisection(ray, ta, tb, active_idxs, remaining_tau, gmm);
