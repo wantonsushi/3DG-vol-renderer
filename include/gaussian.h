@@ -7,18 +7,17 @@
 #include <iostream>
 
 // approximate inverse error function (Winitzki approx).
-// valid for |x| < 1. For x extremely close to +-1 we treat separately.
-static inline double erfinv_approx(double x) {
+inline double erfinv_approx(double x) {
     // handle special cases
     if (std::isnan(x)) return std::numeric_limits<double>::quiet_NaN();
     if (x <= -1.0) return -std::numeric_limits<double>::infinity();
     if (x >=  1.0) return  std::numeric_limits<double>::infinity();
 
     // Winitzki approximation
-    const double a = 0.147; // recommended constant
+    const double a = 0.14; // recommended constant
     double sign = (x < 0.0) ? -1.0 : 1.0;
     double ln_term = std::log(1.0 - x * x);
-    double first = 2.0 / (M_PI * a) + ln_term / 2.0;
+    double first = 2.0 / (std::numbers::pi * a) + ln_term / 2.0;
     double inside = first * first - ln_term / a;
     if (inside < 0.0) inside = 0.0; // guard (shouldn't usually happen)
     double result = std::sqrt(std::sqrt(inside) - first);
@@ -205,7 +204,7 @@ public:
         double B = 2.0 * double(p.dot(Md));
         double C = double(p.dot(Mp));
 
-            double sqrtA = std::sqrt(A);
+        double sqrtA = std::sqrt(A);
         double pref = double(density) * double(norm) *
                     std::sqrt(std::numbers::pi / (2.0 * A));
         double exp_factor = std::exp(-0.5 * (C - (B*B) / (4.0 * A)));
