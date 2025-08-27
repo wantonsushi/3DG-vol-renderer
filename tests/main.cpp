@@ -20,7 +20,7 @@ int main() {
 
     // Load scene
     // Scene scene = Scene::load_SMM("../scenes/spheres/1_spheres.txt");
-    Scene scene = Scene::load_GMM("../scenes/gaussians/250_random.txt");
+    Scene scene = Scene::load_GMM("../scenes/gaussians/2_gaussian.txt");
     const float step_size = 0.01f;
 
 #ifndef MAKE_GIF
