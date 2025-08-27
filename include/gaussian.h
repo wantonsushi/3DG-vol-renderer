@@ -41,6 +41,10 @@ private:
     
     Eigen::Matrix3f whitening_T;
 
+    // eigenvectors/eigenvalues (useful for AABB computation)
+    Eigen::Matrix3f eigvecs;    // columns are eigenvectors
+    Eigen::Vector3f eigvals;    // eigenvalues
+
 public:
     Gaussian(
         const Eigen::Vector3f& mean,
@@ -55,8 +59,8 @@ public:
         norm = std::pow(2.0f * std::numbers::pi, -1.5f) * std::pow(det_cov, -0.5f);
 
         Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> es(covariance);
-        Eigen::Vector3f eigvals = es.eigenvalues();
-        Eigen::Matrix3f eigvecs = es.eigenvectors();
+        eigvals = es.eigenvalues();
+        eigvecs = es.eigenvectors();
 
         Eigen::Matrix3f sqrt_inv_lambda = Eigen::Matrix3f::Zero();
         sqrt_inv_lambda(0,0) = 1.0f / std::sqrt(eigvals[0]);
@@ -247,6 +251,44 @@ public:
 
         t_out = float(t_candidate);
         return true;
+    }
+
+    // =========================================================================================
+    // BVH utils
+
+    Eigen::Vector3f centroid() const { return mean; }
+
+    void get_aabb(Eigen::Vector3f& bmin_out, Eigen::Vector3f& bmax_out) const {
+        Eigen::Vector3f extents;
+        extents[0] = R * std::sqrt(std::max<float>(eigvals[0], 0.0f));
+        extents[1] = R * std::sqrt(std::max<float>(eigvals[1], 0.0f));
+        extents[2] = R * std::sqrt(std::max<float>(eigvals[2], 0.0f));
+
+        // world-axis extents = sum_j |u_j| * extents_j (u_j = column j of eigvecs)
+        Eigen::Vector3f h = Eigen::Vector3f::Zero();
+        for (int j = 0; j < 3; ++j) {
+            Eigen::Vector3f u = eigvecs.col(j).cwiseAbs();
+            h += u * extents[j];
+        }
+
+        bmin_out = mean - h;
+        bmax_out = mean + h;
+    }
+
+    float ellipsoid_surface_area() const {
+        // semi-axes (R * sqrt(eigvals))
+        float a = R * std::sqrt(std::max<float>(eigvals[0], 0.0f));
+        float b = R * std::sqrt(std::max<float>(eigvals[1], 0.0f));
+        float c = R * std::sqrt(std::max<float>(eigvals[2], 0.0f));
+
+        // Thomsen's approximation
+        const double p = 1.6075; 
+        double ap = std::pow((double)a, p);
+        double bp = std::pow((double)b, p);
+        double cp = std::pow((double)c, p);
+        double mean = (ap * bp + ap * cp + bp * cp) / 3.0;
+        double area = 4.0 * std::numbers::pi * std::pow(mean, 1.0 / p);
+        return float(area);
     }
 };
 

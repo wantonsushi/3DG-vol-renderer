@@ -116,8 +116,6 @@ struct Scene {
 
         // build GMM
         s.gmm = std::vector<GaussianMixtureModel>{ GaussianMixtureModel(gaussians) };
-        std::cout << "Loaded GMM scene from " << filename
-                  << ", #gaussians=" << gaussians.size() << std::endl;
         return s;
     }
     

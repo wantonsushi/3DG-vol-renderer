@@ -23,9 +23,9 @@ def generate_gaussian():
     y = np.random.uniform(0.0, 2.0)
     z = np.random.uniform(-1.0, 1.0)
 
-    dx = np.random.uniform(0.1, 0.35)
-    dy = np.random.uniform(0.1, 0.35)
-    dz = np.random.uniform(0.1, 0.35)
+    dx = np.random.uniform(0.01, 0.035)
+    dy = np.random.uniform(0.01, 0.035)
+    dz = np.random.uniform(0.01, 0.035)
 
     R = random_rotation_matrix()
     cov = generate_covariance_matrix([dx, dy, dz], R)

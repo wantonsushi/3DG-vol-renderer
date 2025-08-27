@@ -3,7 +3,6 @@
 #include "test_integrators.h"
 #include "gif.h"
 
-#include <chrono>
 #include <iostream>
 #include <memory>
 
@@ -20,7 +19,7 @@ int main() {
 
     // Load scene
     // Scene scene = Scene::load_SMM("../scenes/spheres/1_spheres.txt");
-    Scene scene = Scene::load_GMM("../scenes/gaussians/2_gaussian.txt");
+    Scene scene = Scene::load_GMM("../scenes/gaussians/20k_bias.txt");
     const float step_size = 0.01f;
 
 #ifndef MAKE_GIF
