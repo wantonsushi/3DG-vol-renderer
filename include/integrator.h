@@ -257,7 +257,7 @@ private:
 public:
     FreeFlightGaussians(
         const std::shared_ptr<Camera>& cam,
-        int   num_samples = 1024
+        int   num_samples = 512
     ) : Integrator(cam), num_samples(num_samples) 
     {
         std::cout << "Gaussian free-flight renderer (single-scattering)" << std::endl;
@@ -392,7 +392,7 @@ private:
 public:
     MultiScatterGaussians(
         const std::shared_ptr<Camera>& cam,
-        int samples = 1024,
+        int samples = 512,
         int min_bounces = 5
     ) : Integrator(cam), num_samples(samples), min_scatter(min_bounces) 
     {

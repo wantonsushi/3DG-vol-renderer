@@ -15,15 +15,12 @@ int main() {
     const unsigned int width = 512;
     const unsigned int height = 512;
 
-    const unsigned int num_samples = 1;
-    const unsigned int max_depth = 10000;
-
     const Eigen::Vector3f camera_lookat{0, 1, 0};
     const float FOV = 0.25f * std::numbers::pi;
 
     // Load scene
     // Scene scene = Scene::load_SMM("../scenes/spheres/1_spheres.txt");
-    Scene scene = Scene::load_GMM("../scenes/gaussians/2_gaussian.txt");
+    Scene scene = Scene::load_GMM("../scenes/gaussians/250_random.txt");
     const float step_size = 0.01f;
 
 #ifndef MAKE_GIF

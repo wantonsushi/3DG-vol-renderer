@@ -140,8 +140,8 @@ inline float solve_distance_uniform(
 // Exactly **one** of these must be defined
 //#define BISECTION
 //#define NEWTON
-//#define ANALYTIC_PLUS_BISECTION
-#define ANALYTIC_PLUS_NEWTON
+#define ANALYTIC_PLUS_BISECTION
+//#define ANALYTIC_PLUS_NEWTON
 //#define UNIFORM
 
 // Abstract distance solver:
