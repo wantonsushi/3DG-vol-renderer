@@ -274,21 +274,5 @@ public:
         bmin_out = mean - h;
         bmax_out = mean + h;
     }
-
-    float ellipsoid_surface_area() const {
-        // semi-axes (R * sqrt(eigvals))
-        float a = R * std::sqrt(std::max<float>(eigvals[0], 0.0f));
-        float b = R * std::sqrt(std::max<float>(eigvals[1], 0.0f));
-        float c = R * std::sqrt(std::max<float>(eigvals[2], 0.0f));
-
-        // Thomsen's approximation
-        const double p = 1.6075; 
-        double ap = std::pow((double)a, p);
-        double bp = std::pow((double)b, p);
-        double cp = std::pow((double)c, p);
-        double mean = (ap * bp + ap * cp + bp * cp) / 3.0;
-        double area = 4.0 * std::numbers::pi * std::pow(mean, 1.0 / p);
-        return float(area);
-    }
 };
 

@@ -90,7 +90,7 @@ public:
                         // --- add Monte Carlo‐sampled environment ---
                         Eigen::Vector3f Le_env = Eigen::Vector3f::Zero();
                         for (int s = 0; s < env_samples; ++s) {
-                            Eigen::Vector3f wi = sample_uniform_direction();
+                            Eigen::Vector3f wi = sample_uniform_direction_old();
                             Ray shadow(pos, wi);
 
                             // get analytic transmittance
@@ -233,7 +233,7 @@ public:
                         // --- environment ---
                         Eigen::Vector3f Le = Eigen::Vector3f::Zero();
                         for (int si = 0; si < env_samples; ++si) {
-                            Eigen::Vector3f wi = sample_uniform_direction();
+                            Eigen::Vector3f wi = sample_uniform_direction_old();
                             Ray               env_ray(pos, wi);
 
                             auto env_ev = scene.intersect_events(env_ray);

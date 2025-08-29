@@ -10,13 +10,28 @@
 
 #include <iostream>
 
-// generate a uniform random direction over the unit sphere
-inline Eigen::Vector3f sample_uniform_direction() {
+inline Eigen::Vector3f sample_uniform_direction_old() {
     static thread_local std::mt19937 gen(std::random_device{}());
     static thread_local std::uniform_real_distribution<float> dist(0.0f, 1.0f);
 
     float xi1 = dist(gen);
     float xi2 = dist(gen);
+
+    float theta = 2.0f * std::numbers::pi * xi1;        // azimuth
+    float phi = std::acos(1.0f - 2.0f * xi2);           // polar
+
+    float x = std::sin(phi) * std::cos(theta);
+    float y = std::sin(phi) * std::sin(theta);
+    float z = std::cos(phi);
+
+    return Eigen::Vector3f(x, y, z);
+}
+
+
+// generate a uniform random direction over the unit sphere
+inline Eigen::Vector3f sample_uniform_direction(PCG32& rng) {
+    float xi1 = rng.uniform();
+    float xi2 = rng.uniform();
 
     float theta = 2.0f * std::numbers::pi * xi1;        // azimuth
     float phi = std::acos(1.0f - 2.0f * xi2);           // polar
@@ -202,7 +217,7 @@ public:
                         // --- environment ---
                         Eigen::Vector3f Le(0.0f, 0.0f, 0.0f);
                         for (int s = 0; s < env_samples; ++s) {
-                            Eigen::Vector3f wi = sample_uniform_direction();
+                            Eigen::Vector3f wi = sample_uniform_direction_old();
                             Ray   env_ray(pos, wi);
 
                             auto env_events = scene.intersect_events(env_ray);
@@ -257,7 +272,7 @@ private:
 public:
     FreeFlightGaussians(
         const std::shared_ptr<Camera>& cam,
-        int   num_samples = 4
+        int   num_samples = 256
     ) : Integrator(cam), num_samples(num_samples) 
     {
         std::cout << "Gaussian free-flight renderer (single-scattering)" << std::endl;
@@ -285,13 +300,16 @@ public:
                 Eigen::Vector3f pixel_L = Eigen::Vector3f::Zero();
 
                 for (int si = 0; si < num_samples; ++si) {
+                    uint64_t seed = derive_path_seed(x, y, si);
+                    PCG32 rng(seed, 1);
+
                     int n = int(std::sqrt(num_samples)); // ASSUMING num_samples is power of 2
                     int sx = si % n;
                     int sy = si / n;
 
                     // stratified sample inside pixel
-                    float u = (x + (sx + rand01()) / n) / W;
-                    float v = (y + (sy + rand01()) / n) / H;
+                    float u = (x + (sx + rng.uniform()) / n) / W;
+                    float v = (y + (sy + rng.uniform()) / n) / H;
                     
                     Ray ray = camera->sample_ray({u,v});
                     auto events = scene.intersect_events(ray);
@@ -301,7 +319,7 @@ public:
                     }
 
                     //  sample a target optical depth to get free-flight distance
-                    float target_tau = -std::log(1.0f - rand01());
+                    float target_tau = -std::log(1.0f - rng.uniform());
                     std::vector<bool> active(scene.get_num_primitives(), false);
                     float acc_tau = 0.0f;
                     size_t ev_i = 0;
@@ -342,11 +360,11 @@ public:
                     scene.evaluate_sigma(active, pos, sigma_a, sigma_s);
 
                     // sample single scatter inscattering from one random light (including env)
-                    bool is_env = (rand01() < 1.0f/(scene.lights.size()+1));
+                    bool is_env = (rng.uniform() < 1.0f/(scene.lights.size()+1));
                     Eigen::Vector3f Li = Eigen::Vector3f::Zero();
                     if (!is_env) {
                         // pick random point light
-                        int li = int(rand01()*scene.lights.size());
+                        int li = int(rng.uniform()*scene.lights.size());
                         const auto &L = scene.lights[li];
                         Eigen::Vector3f wi = (L.position - pos).normalized();
                         float dist = (L.position - pos).norm();
@@ -357,7 +375,7 @@ public:
                         Li = Tr * L.intensity / (dist*dist);
                     } else {
                         // one env-sample: uniform dir
-                        Eigen::Vector3f wi = sample_uniform_direction();
+                        Eigen::Vector3f wi = sample_uniform_direction(rng);
                         Ray eray(pos, wi);
                         
                         float inf = std::numeric_limits<float>::infinity();
@@ -421,13 +439,17 @@ public:
                 Eigen::Vector3f pixel_L = Eigen::Vector3f::Zero();
                 
                 for (int si = 0; si < num_samples; ++si) {
+                    uint64_t seed = derive_path_seed(x, y, si);
+                    PCG32 rng(seed, 1);
+                    //if(x == 0 && y == 0) {std::cout << "seed: " << seed << std::endl; }
+
                     int n = int(std::sqrt(num_samples)); // ASSUMING num_samples is power of 2
                     int sx = si % n;
                     int sy = si / n;
 
                     // stratified sample inside pixel
-                    float u = (x + (sx + rand01()) / n) / W;
-                    float v = (y + (sy + rand01()) / n) / H;
+                    float u = (x + (sx + rng.uniform()) / n) / W;
+                    float v = (y + (sy + rng.uniform()) / n) / H;
 
                     Ray ray = camera->sample_ray({u, v});
                     
@@ -445,7 +467,7 @@ public:
                         }
 
                         //  sample a target optical depth 
-                        float target_tau = -std::log(1.0f - rand01());
+                        float target_tau = -std::log(1.0f - rng.uniform());
                         std::vector<bool> active(scene.get_num_primitives(), false);
                         float acc_tau = 0.0f;
                         float t_prev = 0.0f;
@@ -488,13 +510,13 @@ public:
                         scene.evaluate_sigma(active, pos, sigma_a, sigma_s);
                         
                         // Next Event Estimation: sample one light or env
-                        bool is_env = (rand01() < 1.f / (scene.lights.size() + 1));
+                        bool is_env = (rng.uniform() < 1.f / (scene.lights.size() + 1));
                         Eigen::Vector3f Li = Eigen::Vector3f::Zero();
                         float nee_weight = 0.f;
 
                         if (!is_env) {
                             // pick random point light
-                            int li = int(rand01()*scene.lights.size());
+                            int li = int(rng.uniform()*scene.lights.size());
                             const auto &L = scene.lights[li];
                             Eigen::Vector3f wi = (L.position - pos).normalized();
                             float dist = (L.position - pos).norm();
@@ -505,7 +527,7 @@ public:
                             Li = Tr * L.intensity / (dist * dist);
                         } else {
                             // one env-sample: uniform dir
-                            Eigen::Vector3f wi = sample_uniform_direction();
+                            Eigen::Vector3f wi = sample_uniform_direction(rng);
                             Ray eray(pos, wi);
                             float inf = std::numeric_limits<float>::infinity();
                             float Tr = scene.gmm->at(0).transmittance_up_to(eray, inf);
@@ -525,12 +547,12 @@ public:
                         // russian roulette to stop multi-scatter after min_scatter
                         if (bounce >= min_scatter) {
                             float rr = std::min(throughput.maxCoeff(), 0.9f);
-                            if (rand01() > rr) break;
+                            if (rng.uniform() > rr) break;
                             throughput /= rr;
                         }
 
                         // sample random scattering direction and continue
-                        Eigen::Vector3f new_dir = sample_uniform_direction();
+                        Eigen::Vector3f new_dir = sample_uniform_direction(rng);
                         ray = Ray(pos, new_dir);
                     }
 

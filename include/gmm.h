@@ -40,14 +40,21 @@ private:
         return std::numeric_limits<float>::infinity();
     }
 
+    static inline bool point_in_aabb(const Eigen::Vector3f& p, const Eigen::Vector3f& bmin, const Eigen::Vector3f& bmax) {
+        return (p.x() >= bmin.x() && p.x() <= bmax.x() &&
+                p.y() >= bmin.y() && p.y() <= bmax.y() &&
+                p.z() >= bmin.z() && p.z() <= bmax.z());
+    }
 public:
     std::vector<Gaussian> gaussians;
 
     GaussianMixtureModel() = default;
 
-    explicit GaussianMixtureModel(const std::vector<Gaussian>& gs) : gaussians(gs) 
+    explicit GaussianMixtureModel(const std::vector<Gaussian>& gs) 
+        : gaussians(gs)
     {
         if (!gaussians.empty()) {
+
             auto start = std::chrono::high_resolution_clock::now();
             BuildBVH();
             auto end = std::chrono::high_resolution_clock::now();

@@ -6,12 +6,10 @@
 #include <vector>
 #include <random>
 
-// generate random xi~U(0,1)
-inline float rand01() {
-    thread_local static std::mt19937 gen{ std::random_device{}() };
-    thread_local static std::uniform_real_distribution<float> dist(0.0f, 1.0f);
-    return dist(gen);
-}
+#include <atomic>
+#include <cstdint>
+
+#include "rng.h"
 
 // ============================================================================================
 //  DISTANCE SOLVERS:
