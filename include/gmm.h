@@ -207,7 +207,7 @@ public:
         indices.resize(N);
         for (uint32_t i = 0; i < N; ++i) indices[i] = i;
 
-        // precompute per-gaussian AABBs in parallel (used for root bounds / speed)
+        // precompute per-gaussian AABBs
         std::vector<Eigen::Vector3f> gmins(N), gmaxs(N);
 
         for (int i = 0; i < (int)N; ++i) {

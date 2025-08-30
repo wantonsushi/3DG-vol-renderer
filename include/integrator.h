@@ -467,34 +467,59 @@ public:
 
                         //  sample a target optical depth
                         float target_tau = -std::log(1.0f - rng.uniform());
-                        std::vector<bool> active(scene.get_num_primitives(), false);
+                        
+                        const size_t Nprims = scene.get_num_primitives();
+                        std::vector<int> idx_pos(Nprims, -1);
+                        std::vector<size_t> active_idxs;
+                        active_idxs.reserve(32); // (should be well above typical overlap count)
+
                         float acc_tau = 0.0f;
                         float t_prev = 0.0f;
                         float t_scatter = -1.f;
-                        size_t ev_i = 0;
-                        
-                        // march over segments with fixed numbers of gaussians
-                        std::vector<size_t> active_idxs;
-                        while (ev_i < events.size()) {
-                            float t_evt = events[ev_i].t;
-                            active_idxs.clear();
-                            for (size_t i = 0; i < active.size(); ++i)
-                                if (active[i]) active_idxs.push_back(i);
+                        size_t ev_i_local = 0;
 
-                            // accumulate til exceed target
-                            float seg_tau = 0.f;
-                            for (auto idx: active_idxs)
+                        while (ev_i_local < events.size()) {
+                            float t_evt = events[ev_i_local].t;
+
+                            // --- compute optical depth contributed by currently-active gaussians for [t_prev, t_evt]
+                            double seg_tau = 0.0;
+                            for (size_t idx : active_idxs) {
                                 seg_tau += scene.gmm->at(0).gaussians[idx].optical_depth(ray, t_prev, t_evt);
+                            }
 
-                            if (acc_tau + seg_tau > target_tau) {
-                                // exceeded: find exact distance within segment
+                            // if this segment would exceed target, solve inside it
+                            if (acc_tau + float(seg_tau) > target_tau) {
                                 t_scatter = solve_distance(ray, t_prev, t_evt, active_idxs, target_tau - acc_tau, scene.gmm->at(0));
                                 break;
                             }
-                            acc_tau += seg_tau;
-                            active[events[ev_i].index] = events[ev_i].entering;
+
+                            acc_tau += float(seg_tau);
+
+                            // update the active set for the NEXT segment
+                            uint32_t gidx = events[ev_i_local].index;
+                            bool entering = events[ev_i_local].entering;
+
+                            if (entering) {
+                                // add gidx
+                                if (idx_pos[gidx] == -1) {
+                                    idx_pos[gidx] = int(active_idxs.size());
+                                    active_idxs.push_back(gidx);
+                                }
+                            } else {
+                                // remove gidx (swap-remove idiom)
+                                int pos = idx_pos[gidx];
+                                if (pos != -1) {
+                                    size_t last_idx = active_idxs.back();
+                                    active_idxs[pos] = last_idx;
+                                    idx_pos[last_idx] = pos;
+                                    active_idxs.pop_back();
+                                    idx_pos[gidx] = -1;
+                                }
+                            }
+
+                            // advance to next segment
                             t_prev = t_evt;
-                            ++ev_i;
+                            ++ev_i_local;
                         }
 
                         // if we never reached target, sample env
