@@ -11,6 +11,10 @@
 
 #include "rng.h"
 
+inline bool has_nan(const Eigen::Vector3f& v) {
+    return std::isnan(v.x()) || std::isnan(v.y()) || std::isnan(v.z());
+}
+
 // ============================================================================================
 //  DISTANCE SOLVERS:
 //      find t in [ta, tb] so that

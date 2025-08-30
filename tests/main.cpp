@@ -19,7 +19,8 @@ int main() {
 
     // Load scene
     // Scene scene = Scene::load_SMM("../scenes/spheres/1_spheres.txt");
-    Scene scene = Scene::load_GMM("../scenes/gaussians/2500_random_small.txt");
+    Scene scene = Scene::load_GMM("../scenes/gaussians/many_gaussians.txt");
+    const int num_samples = 4196;  // <-- must be power of 2 for stratified sampling
     const float step_size = 0.01f;
 
 #ifndef MAKE_GIF
@@ -29,7 +30,7 @@ int main() {
     auto camera = make_shared<Pinhole_Camera>(camera_pos, view_dir, FOV);
     //auto camera = make_shared<Orthographic_Camera>(camera_pos, view_dir);
 
-    auto integrator = make_unique<MultiScatterGaussians>(camera);
+    auto integrator = make_unique<MultiScatterGaussians>(camera, num_samples);
 
     auto start = chrono::high_resolution_clock::now();
     integrator->render(scene, image);

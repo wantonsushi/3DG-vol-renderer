@@ -337,7 +337,7 @@ public:
                         for (auto idx : active_idxs)
                             seg_tau += scene.gmm->at(0).gaussians[idx]
                                          .optical_depth(ray, t_prev, t_evt);
-                            if (acc_tau + seg_tau >= target_tau) {
+                            if (acc_tau + seg_tau > target_tau) {
                                 // exceeded! now find exact distance within segment
                                 t_scatter = solve_distance(ray, t_prev, t_evt, active_idxs, target_tau - acc_tau, scene.gmm->at(0));
                                 break;
@@ -356,8 +356,8 @@ public:
 
                     // evaluate medium at sampled distance
                     Eigen::Vector3f pos = ray.origin + t_scatter*ray.direction;
-                    float sigma_a, sigma_s;
-                    scene.evaluate_sigma(active, pos, sigma_a, sigma_s);
+                    float albedo = scene.gmm->at(0).evaluate_albedo(active_idxs, pos);
+                        
 
                     // sample single scatter inscattering from one random light (including env)
                     bool is_env = (rng.uniform() < 1.0f/(scene.lights.size()+1));
@@ -385,7 +385,6 @@ public:
 
                     // apprpriately weight sample
                     float phase_pdf = 1.0f / (4.0f * std::numbers::pi);
-                    float albedo = sigma_s / (sigma_s + sigma_a);  
                     float w_light = float(scene.lights.size() + 1);
 
                     pixel_L += (albedo * phase_pdf * w_light) * Li;
@@ -466,7 +465,7 @@ public:
                             break;
                         }
 
-                        //  sample a target optical depth 
+                        //  sample a target optical depth
                         float target_tau = -std::log(1.0f - rng.uniform());
                         std::vector<bool> active(scene.get_num_primitives(), false);
                         float acc_tau = 0.0f;
@@ -487,7 +486,7 @@ public:
                             for (auto idx: active_idxs)
                                 seg_tau += scene.gmm->at(0).gaussians[idx].optical_depth(ray, t_prev, t_evt);
 
-                            if (acc_tau + seg_tau >= target_tau) {
+                            if (acc_tau + seg_tau > target_tau) {
                                 // exceeded: find exact distance within segment
                                 t_scatter = solve_distance(ray, t_prev, t_evt, active_idxs, target_tau - acc_tau, scene.gmm->at(0));
                                 break;
@@ -506,8 +505,7 @@ public:
 
                         // evaluate medium at sampled distance
                         Eigen::Vector3f pos = ray.origin + t_scatter * ray.direction;
-                        float sigma_a, sigma_s;
-                        scene.evaluate_sigma(active, pos, sigma_a, sigma_s);
+                        float albedo = scene.gmm->at(0).evaluate_albedo(active_idxs, pos);
                         
                         // Next Event Estimation: sample one light or env
                         bool is_env = (rng.uniform() < 1.f / (scene.lights.size() + 1));
@@ -536,9 +534,9 @@ public:
 
                         // appropriately weight NEE sample
                         float phase_pdf = 1.f / (4.0f * std::numbers::pi);
-                        float albedo = sigma_s / (sigma_s + sigma_a);
                         float w_ne = float(scene.lights.size() + 1);
                         Eigen::Vector3f contrib = (throughput * (albedo * phase_pdf * w_ne)).cwiseProduct(Li);
+                        
                         L_accum += contrib;
 
                         // update throughput for recursive scattering sample

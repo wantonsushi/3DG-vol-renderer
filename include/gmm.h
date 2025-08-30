@@ -103,6 +103,23 @@ public:
         sigma_a = (1.0f - a_mix) * sum_mu_t;
     }
 
+    float evaluate_albedo(
+        const std::vector<size_t>& active_idxs,
+        const Eigen::Vector3f&     pos
+    ) const {
+        float sum_mu_t     = 0.0f;
+        float sum_mu_t_alb = 0.0f;
+
+        for (size_t idx : active_idxs) {
+            float mu_t_i = gaussians[idx].mu_t(pos);
+            sum_mu_t     += mu_t_i;
+            sum_mu_t_alb += mu_t_i * gaussians[idx].get_albedo();
+        }
+
+        float a = sum_mu_t_alb / sum_mu_t;
+        return std::clamp(a, 0.0f, 1.0f);
+    }
+
     // get transmittance over all active gaussians = exp(-sum(optical depths))
     float transmittance_over_segment(
         const Ray& ray,

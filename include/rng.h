@@ -28,8 +28,8 @@ struct PCG32 {
     // Seed the generator
     void seed(uint64_t seed_state, uint64_t seed_seq) {
         state = 0;
-        inc = (seed_seq << 1) | 1; // must be odd
-        next_u32();                 // warm-up
+        inc = (seed_seq << 1) | 1;
+        next_u32();
         state += seed_state;
         next_u32();
     }
@@ -38,9 +38,9 @@ struct PCG32 {
     uint32_t next_u32() {
         uint64_t old = state;
         state = old * 6364136223846793005ULL + inc;
-        uint32_t xorshifted = (uint32_t)(((old >> 18u) ^ old) >> 27u);
+        uint32_t shifted = (uint32_t)(((old >> 18u) ^ old) >> 27u);
         uint32_t rot = old >> 59u;
-        return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
+        return (shifted >> rot) | (shifted << ((-rot + 1u) & 31));
     }
 
     // Float in [0,1)
@@ -50,6 +50,8 @@ struct PCG32 {
 };
 
 inline uint64_t derive_path_seed(int x, int y, int sample_index) {
-    uint64_t v = (uint64_t(x) << 32) ^ (uint64_t(y) << 16) ^ uint64_t(sample_index);
-    return splitmix64(v);
+    uint64_t seed = (uint64_t(sample_index) << 32) |
+                 (uint64_t(y) << 16) |
+                 (uint64_t(x));
+    return splitmix64(seed);
 }
