@@ -51,17 +51,15 @@ public:
     size_t get_num_spheres() const { return spheres.size(); }
 
     // get all individual intersection events, sorted in ascending order
-    std::vector<PrimitiveHitEvent> intersect_events(const Ray& ray) const {
-        std::vector<PrimitiveHitEvent> events;
+    inline void intersect_events(const Ray& ray, std::vector<PrimitiveHitEvent>& out_events) const {
         for (size_t i = 0; i < spheres.size(); ++i) {
             float t_enter, t_exit;
             if (spheres[i].intersect(ray, t_enter, t_exit)) {
-                if (t_enter >= 0.0f) events.push_back({t_enter, true, i});
-                if (t_exit >= 0.0f) events.push_back({t_exit, false, i});
+                if (t_enter >= 0.0f) out_events.push_back({t_enter, true, i});
+                if (t_exit >= 0.0f) out_events.push_back({t_exit, false, i});
             }
         }
-        std::sort(events.begin(), events.end());
-        return events;
+        std::sort(out_events.begin(), out_events.end());
     }
 
      // evaluate absorption/scattering coefficients over multiple homogenous spheres    

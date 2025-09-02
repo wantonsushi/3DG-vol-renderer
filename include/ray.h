@@ -9,7 +9,7 @@ struct Ray {
 
     Ray() {}
     Ray(const Eigen::Vector3f& origin, const Eigen::Vector3f& direction)
-        : origin(origin), direction(direction) {}
+        : origin(origin), direction(direction.normalized()) {}
 
     Eigen::Vector3f operator()(float t) const { return origin + t * direction; }
 

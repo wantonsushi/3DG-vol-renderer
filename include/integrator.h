@@ -81,7 +81,9 @@ public:
                 Ray ray = camera->sample_ray(uv);
 
                 // set some constant color if an intersection is detected on the primary ray
-                Eigen::Vector3f color = !scene.intersect_events(ray).empty()
+                std::vector<PrimitiveHitEvent> hits;
+                scene.intersect_events(ray, hits);
+                Eigen::Vector3f color = !hits.empty()
                     ? Eigen::Vector3f(1.0f, 0.0f, 1.0f)
                     : scene.env_color;                   
 
@@ -150,7 +152,8 @@ public:
                 float v = (y + 0.5f) / H;
                 Ray ray = camera->sample_ray({u, v});
 
-                auto primary_events = scene.intersect_events(ray);
+                std::vector<PrimitiveHitEvent> primary_events;
+                scene.intersect_events(ray, primary_events);
                 if (primary_events.empty()) {
                     image.set_pixel(x, y, scene.env_color);
                     continue;
@@ -191,7 +194,8 @@ public:
                             float           dist = (light.position - pos).norm();
                             Ray   shadow_ray(pos, wi);
 
-                            auto shadow_events = scene.intersect_events(shadow_ray);
+                            std::vector<PrimitiveHitEvent> shadow_events;
+                            scene.intersect_events(shadow_ray, shadow_events);
 
                             std::vector<bool> shadow_active = primary_active;
                             for (size_t i = 0; i < shadow_active.size(); ++i) {
@@ -220,7 +224,8 @@ public:
                             Eigen::Vector3f wi = sample_uniform_direction_old();
                             Ray   env_ray(pos, wi);
 
-                            auto env_events = scene.intersect_events(env_ray);
+                            std::vector<PrimitiveHitEvent> env_events;
+                            scene.intersect_events(env_ray, env_events);
 
                             std::vector<bool> env_active = primary_active;
                             for (size_t i = 0; i < env_active.size(); ++i) {
@@ -312,8 +317,15 @@ public:
                     float v = (y + (sy + rng.uniform()) / n) / H;
                     
                     Ray ray = camera->sample_ray({u,v});
-                    auto events = scene.intersect_events(ray);
-                    if (events.empty()) {
+
+                    const size_t Nprims = scene.get_num_primitives();
+
+                    // thread local stuff
+                    static thread_local std::vector<PrimitiveHitEvent> events_tls;
+                    events_tls.reserve(std::max<size_t>(64, Nprims / 32) ); // tune reserve based on expected overlaps
+
+                    scene.gmm->at(0).intersect_events(ray, events_tls);
+                    if (events_tls.empty()) {
                         pixel_L += scene.env_color;
                         continue;
                     }
@@ -327,8 +339,8 @@ public:
 
                     // march over segments with fixed numbers of gaussians
                     std::vector<size_t> active_idxs;
-                    while (ev_i < events.size()) {
-                        float t_evt = events[ev_i].t;
+                    while (ev_i < events_tls.size()) {
+                        float t_evt = events_tls[ev_i].t;
                         active_idxs.clear();
                         for (size_t i=0;i<active.size();++i)
                             if (active[i]) active_idxs.push_back(i);
@@ -343,7 +355,7 @@ public:
                                 break;
                             }
                         acc_tau += seg_tau;
-                        active[events[ev_i].index] = events[ev_i].entering;
+                        active[events_tls[ev_i].index] = events_tls[ev_i].entering;
                         t_prev = t_evt;
                         ++ev_i;
                     }
@@ -358,7 +370,6 @@ public:
                     Eigen::Vector3f pos = ray.origin + t_scatter*ray.direction;
                     float albedo = scene.gmm->at(0).evaluate_albedo(active_idxs, pos);
                         
-
                     // sample single scatter inscattering from one random light (including env)
                     bool is_env = (rng.uniform() < 1.0f/(scene.lights.size()+1));
                     Eigen::Vector3f Li = Eigen::Vector3f::Zero();
@@ -406,6 +417,84 @@ private:
     int num_samples;
     int min_scatter;
 
+    inline float get_free_flight_distance(
+        const Ray& ray,
+        const std::vector<PrimitiveHitEvent>& events,
+        float target_tau,
+        const GaussianMixtureModel& gmm,
+        std::vector<size_t>& out_active_idxs,
+        std::vector<int>& idx_pos,        // thread-local index->position
+        std::vector<int>& idx_epoch,      // thread-local epoch marker per index
+        int& epoch_counter                // thread-local epoch counter (incremented per-call)
+    ) const
+    {
+        // start a new epoch
+        int cur_epoch = ++epoch_counter;
+        // handle very unlikely wrap around
+        if (cur_epoch == 0) {
+            std::fill(idx_epoch.begin(), idx_epoch.end(), 0);
+            cur_epoch = ++epoch_counter;
+        }
+
+        double acc_tau = 0.0;
+        float t_prev = 0.0f;
+        size_t ev_i_local = 0;
+
+        while (ev_i_local < events.size()) {
+            float t_evt = events[ev_i_local].t;
+
+            // compute optical depth contributed by currently-active gaussians for [t_prev, t_evt]
+            double seg_tau = 0.0;
+            for (size_t idx : out_active_idxs) {
+                seg_tau += gmm.gaussians[idx].optical_depth(ray, t_prev, t_evt);
+            }
+
+            // if this segment would exceed target, solve inside it
+            if (acc_tau + seg_tau > double(target_tau)) {
+                float remaining_tau = float(double(target_tau) - acc_tau);
+                float t_scatter = solve_distance(ray, t_prev, t_evt, out_active_idxs, remaining_tau, gmm);
+                return t_scatter;
+            }
+
+            acc_tau += seg_tau;
+
+            // update the active set for the NEXT segment
+            uint32_t gidx = events[ev_i_local].index;
+            bool entering = events[ev_i_local].entering;
+
+            if (entering) {
+                // add gidx if not already present in this epoch
+                if (idx_epoch[gidx] != cur_epoch) {
+                    idx_epoch[gidx] = cur_epoch;
+                    idx_pos[gidx] = int(out_active_idxs.size());
+                    out_active_idxs.push_back(gidx);
+                }
+            } else {
+                // remove gidx (swap-remove idiom) only if it is present in this epoch
+                if (idx_epoch[gidx] == cur_epoch) {
+                    int pos = idx_pos[gidx];
+                    // sanity check; pos should be valid if epoch matches
+                    if (pos >= 0 && pos < (int)out_active_idxs.size()) {
+                        size_t last_idx = out_active_idxs.back();
+                        out_active_idxs[pos] = last_idx;
+                        // update position of swapped-in element
+                        idx_pos[last_idx] = pos;
+                        out_active_idxs.pop_back();
+                    }
+                    // mark gidx as absent for this epoch
+                    idx_epoch[gidx] = 0;
+                }
+            }
+
+            // advance to next segment
+            t_prev = t_evt;
+            ++ev_i_local;
+        }
+
+        // no scatter found along events
+        return -1.f;
+    }
+
 public:
     MultiScatterGaussians(
         const std::shared_ptr<Camera>& cam,
@@ -436,7 +525,8 @@ public:
         for (int y = 0; y < H; ++y) {
             for (int x = 0; x < W; ++x) {
                 Eigen::Vector3f pixel_L = Eigen::Vector3f::Zero();
-                
+                const size_t Nprims = scene.get_num_primitives();
+
                 for (int si = 0; si < num_samples; ++si) {
                     uint64_t seed = derive_path_seed(x, y, si);
                     PCG32 rng(seed, 1);
@@ -456,71 +546,45 @@ public:
                     Eigen::Vector3f L_accum = Eigen::Vector3f::Zero();
                     bool alive = true;
 
+                    // thread local stuff
+                    // ======================================================================
+                    static thread_local std::vector<PrimitiveHitEvent> events_tls;
+                    events_tls.reserve(std::max<size_t>(64, Nprims / 8) ); // tune based on expected number of hits
+
+                    static thread_local std::vector<size_t> active_idxs_tls;
+                    active_idxs_tls.reserve(std::max<size_t>(16, Nprims / 128) ); // tune based on expected number of overlap
+
+                    static thread_local std::vector<int> idx_pos_tls(  Nprims, 0 );    
+                    static thread_local std::vector<int> idx_epoch_tls(  Nprims, 0 );
+                    static thread_local int idx_epoch_counter = 0;
+                    // ======================================================================
+
                     // multiple scattering loop
                     for (int bounce = 0; alive; ++bounce) {
-                        // sample free-flight distance as before
-                        auto events = scene.intersect_events(ray);
-                        if (events.empty()) {
+                        // get intersection events
+                        events_tls.clear();
+                        scene.intersect_events(ray, events_tls);
+                        if (events_tls.empty()) {
                             L_accum += throughput.cwiseProduct(scene.env_color);
                             break;
                         }
 
-                        //  sample a target optical depth
+                        // sample a target optical depth
                         float target_tau = -std::log(1.0f - rng.uniform());
                         
-                        const size_t Nprims = scene.get_num_primitives();
-                        std::vector<int> idx_pos(Nprims, -1);
-                        std::vector<size_t> active_idxs;
-                        active_idxs.reserve(32); // (should be well above typical overlap count)
+                        active_idxs_tls.clear();
 
-                        float acc_tau = 0.0f;
-                        float t_prev = 0.0f;
-                        float t_scatter = -1.f;
-                        size_t ev_i_local = 0;
-
-                        while (ev_i_local < events.size()) {
-                            float t_evt = events[ev_i_local].t;
-
-                            // --- compute optical depth contributed by currently-active gaussians for [t_prev, t_evt]
-                            double seg_tau = 0.0;
-                            for (size_t idx : active_idxs) {
-                                seg_tau += scene.gmm->at(0).gaussians[idx].optical_depth(ray, t_prev, t_evt);
-                            }
-
-                            // if this segment would exceed target, solve inside it
-                            if (acc_tau + float(seg_tau) > target_tau) {
-                                t_scatter = solve_distance(ray, t_prev, t_evt, active_idxs, target_tau - acc_tau, scene.gmm->at(0));
-                                break;
-                            }
-
-                            acc_tau += float(seg_tau);
-
-                            // update the active set for the NEXT segment
-                            uint32_t gidx = events[ev_i_local].index;
-                            bool entering = events[ev_i_local].entering;
-
-                            if (entering) {
-                                // add gidx
-                                if (idx_pos[gidx] == -1) {
-                                    idx_pos[gidx] = int(active_idxs.size());
-                                    active_idxs.push_back(gidx);
-                                }
-                            } else {
-                                // remove gidx (swap-remove idiom)
-                                int pos = idx_pos[gidx];
-                                if (pos != -1) {
-                                    size_t last_idx = active_idxs.back();
-                                    active_idxs[pos] = last_idx;
-                                    idx_pos[last_idx] = pos;
-                                    active_idxs.pop_back();
-                                    idx_pos[gidx] = -1;
-                                }
-                            }
-
-                            // advance to next segment
-                            t_prev = t_evt;
-                            ++ev_i_local;
-                        }
+                        // get free-flight distance; fills active_idxs and returns t_scatter
+                        float t_scatter = get_free_flight_distance(
+                            ray,
+                            events_tls,
+                            target_tau,
+                            scene.gmm->at(0),
+                            active_idxs_tls,
+                            idx_pos_tls,
+                            idx_epoch_tls,
+                            idx_epoch_counter
+                        );
 
                         // if we never reached target, sample env
                         if (t_scatter < 0.f) {
@@ -530,12 +594,11 @@ public:
 
                         // evaluate medium at sampled distance
                         Eigen::Vector3f pos = ray.origin + t_scatter * ray.direction;
-                        float albedo = scene.gmm->at(0).evaluate_albedo(active_idxs, pos);
+                        float albedo = scene.gmm->at(0).evaluate_albedo(active_idxs_tls, pos);
                         
                         // Next Event Estimation: sample one light or env
                         bool is_env = (rng.uniform() < 1.f / (scene.lights.size() + 1));
                         Eigen::Vector3f Li = Eigen::Vector3f::Zero();
-                        float nee_weight = 0.f;
 
                         if (!is_env) {
                             // pick random point light

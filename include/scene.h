@@ -125,17 +125,19 @@ struct Scene {
     //  CORE ROUTINES
     // =========================================================================================
 
-    std::vector<PrimitiveHitEvent> intersect_events(const Ray& ray) const {
+    inline void intersect_events(const Ray& ray, std::vector<PrimitiveHitEvent>& out_events) const {
         switch (volume_type) {
             case VolumeType::SPHERES:
                 if (smm && !smm->empty())
-                    return smm->at(0).intersect_events(ray);
+                    smm->at(0).intersect_events(ray, out_events);
+                    return;
                 throw std::runtime_error(
                     "Sphere mixture model not initialized");
 
             case VolumeType::GAUSSIANS:
                 if (gmm && !gmm->empty())
-                    return gmm->at(0).intersect_events(ray);
+                    gmm->at(0).intersect_events(ray, out_events);
+                    return;
                 throw std::runtime_error(
                     "Gaussian mixture model not initialized");
 
@@ -145,10 +147,9 @@ struct Scene {
                 throw std::runtime_error("Trying to intersect with uninitialized medium");
         }
         // unreachable
-        return {};
     }
 
-    size_t get_num_primitives() const {
+    inline size_t get_num_primitives() const {
         switch (volume_type) {
             case VolumeType::SPHERES:
                 if (smm && !smm->empty()) {

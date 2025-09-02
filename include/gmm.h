@@ -141,15 +141,18 @@ public:
     // =========================================================================================
     // =========================================================================================
 
-    std::vector<PrimitiveHitEvent> intersect_events(const Ray& ray) const {
+    inline void intersect_events(
+        const Ray& ray,
+        std::vector<PrimitiveHitEvent>& out_events
+    ) const {
     #ifdef USE_BVH
-        return intersect_events_BVH(ray);
+        intersect_events_BVH(ray, out_events);
     #else
-        return intersect_events_naive(ray);
+        intersect_events_naive(ray, out_events);
     #endif
     }
     
-    float transmittance_up_to(const Ray &ray, float tmax) const {
+    inline float transmittance_up_to(const Ray &ray, float tmax) const {
     #ifdef USE_BVH
         return transmittance_up_to_BVH(ray, tmax);
     #else
@@ -162,23 +165,24 @@ public:
     // Naive intersection routines
     
     // get all individual intersection events, sorted in ascending order
-    std::vector<PrimitiveHitEvent> intersect_events_naive(const Ray& ray) const {
-        std::vector<PrimitiveHitEvent> events;
+    inline void intersect_events_naive(
+        const Ray& ray,
+        std::vector<PrimitiveHitEvent>& out_events
+    ) const {
         for (size_t i = 0; i < gaussians.size(); ++i) {
             float t0, t1;
             //if (gaussians[i].intersect_whitening(ray, t0, t1)) {
             if (gaussians[i].intersect_direct(ray, t0, t1)) {
-                if (t0 >= 0.0f) events.push_back({ t0, true,  i });
-                if (t1 >= 0.0f) events.push_back({ t1, false, i });
+                if (t0 >= 0.0f) out_events.push_back({ t0, true,  i });
+                if (t1 >= 0.0f) out_events.push_back({ t1, false, i });
             }
         }
-        std::sort(events.begin(), events.end());
-        return events;
+        std::sort(out_events.begin(), out_events.end());
     }
 
     // much faster transmittance along ray from t=0 to t = tmax
     // no sorting, for single-scatter shadow transmittance/next-event-estimation
-    float transmittance_up_to_naive(const Ray &ray, float tmax) const {
+    inline float transmittance_up_to_naive(const Ray &ray, float tmax) const {
         if (tmax <= 0.0f) return 1.0f;
 
         double optical_depth_sum = 0.0; // use double for accumulate safety
@@ -422,14 +426,23 @@ public:
     // =========================================================================================
     // intersection routines using BVH
 
-    std::vector<PrimitiveHitEvent> intersect_events_BVH(const Ray& ray) const {
-        std::vector<PrimitiveHitEvent> events;
-        if (gaussians.empty() || nodes.empty()) return events;
+    // use the same stack
+    static inline std::vector<int>& thread_local_stack() {
+        thread_local std::vector<int> stack;
+        return stack;
+    }
 
-        // dynamic stack to avoid overflow; reserve to avoid reallocations
-        std::vector<int> stack;
-        stack.reserve(nodes.size());
-        stack.push_back(0); // root node index
+    inline void intersect_events_BVH(
+        const Ray& ray,
+        std::vector<PrimitiveHitEvent>& out_events
+    ) const {
+        out_events.clear();
+        if (gaussians.empty() || nodes.empty()) return;
+
+        auto& stack = thread_local_stack();
+        stack.clear();
+        stack.reserve(std::max<size_t>(64, nodes.size() / 16));
+        stack.push_back(0); // root
 
         while (!stack.empty()) {
             int nodeIdx = stack.back();
@@ -440,27 +453,14 @@ public:
             if (tmin == std::numeric_limits<float>::infinity()) continue;
 
             if (node.isLeaf()) {
-                // collect leaf events in a temporary vector (threads merge into this)
-                std::vector<PrimitiveHitEvent> leaf_events;
-
-                {
-                    std::vector<PrimitiveHitEvent> thread_events;
-
-                    for (int ii = 0; ii < (int)node.count; ++ii) {
-                        uint32_t gidx = indices[node.leftFirst + ii];
-                        float t0, t1;
-                        if (gaussians[gidx].intersect_direct(ray, t0, t1)) {
-                            if (t0 >= 0.0f) thread_events.push_back({ t0, true,  gidx });
-                            if (t1 >= 0.0f) thread_events.push_back({ t1, false, gidx });
-                        }
+                // push leaf events directly into out_events (avoid temporaries)
+                for (int ii = 0; ii < (int)node.count; ++ii) {
+                    uint32_t gidx = indices[node.leftFirst + ii];
+                    float t0, t1;
+                    if (gaussians[gidx].intersect_direct(ray, t0, t1)) {
+                        if (t0 >= 0.0f) out_events.emplace_back(PrimitiveHitEvent{ t0, true,  gidx });
+                        if (t1 >= 0.0f) out_events.emplace_back(PrimitiveHitEvent{ t1, false, gidx });
                     }
-                    if (!thread_events.empty()) {
-                        leaf_events.insert(leaf_events.end(), thread_events.begin(), thread_events.end());
-                    }
-                }
-
-                if (!leaf_events.empty()) {
-                    events.insert(events.end(), leaf_events.begin(), leaf_events.end());
                 }
             } else {
                 // ordered traversal: compute child entry distances and push farther first
@@ -485,21 +485,22 @@ public:
         }
 
         // sort events by distance (t). Use lambda to be robust in case PrimitiveHitEvent lacks operator<
-        std::sort(events.begin(), events.end(), [](const PrimitiveHitEvent& a, const PrimitiveHitEvent& b){
-            return a.t < b.t;
-        });
-
-        return events;
+        if (!out_events.empty()) {
+            std::sort(out_events.begin(), out_events.end(), [](const PrimitiveHitEvent& a, const PrimitiveHitEvent& b){
+                return a.t < b.t;
+            });
+        }
     }
 
-    float transmittance_up_to_BVH(const Ray &ray, float tmax) const {
+    inline float transmittance_up_to_BVH(const Ray &ray, float tmax) const {
         if (tmax <= 0.0f) return 1.0f;
         if (gaussians.empty() || nodes.empty()) return 1.0f;
 
         double optical_depth_sum = 0.0; // accumulate in double for accuracy
 
-        std::vector<int> stack;
-        stack.reserve(nodes.size());
+        auto& stack = thread_local_stack();
+        stack.clear();
+        stack.reserve(std::max<size_t>(64, nodes.size() / 16));
         stack.push_back(0); // root
 
         while (!stack.empty()) {

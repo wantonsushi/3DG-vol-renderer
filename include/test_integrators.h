@@ -36,7 +36,8 @@ public:
 
                 Eigen::Vector3f radiance = Eigen::Vector3f::Zero();
 
-                const auto events = scene.intersect_events(ray);
+                std::vector<PrimitiveHitEvent> events;
+                scene.intersect_events(ray, events);
                 if (events.empty()) {
                     image.set_pixel(i, j, scene.env_color);
                     continue;
@@ -72,7 +73,9 @@ public:
                             float dist = (light.position - pos).norm();
 
                             Ray shadow_ray(pos, wi);
-                            auto shadow_events = scene.intersect_events(shadow_ray);
+
+                            std::vector<PrimitiveHitEvent> shadow_events;
+                            scene.intersect_events(shadow_ray, shadow_events);
 
                             for (size_t i = 0; i < active.size(); ++i) {
                                 if (active[i]) {
@@ -94,7 +97,8 @@ public:
                             Ray shadow(pos, wi);
 
                             // get analytic transmittance
-                            auto shadow_ev = scene.intersect_events(shadow);
+                            std::vector<PrimitiveHitEvent> shadow_ev;
+                            scene.intersect_events(shadow, shadow_ev);
 
                             for (size_t i = 0; i < active.size(); ++i) {
                                 if (active[i]) {
@@ -163,7 +167,9 @@ public:
 
                 float u = (x + 0.5f)/W, v = (y + 0.5f)/H;
                 Ray ray = camera->sample_ray({u,v});
-                auto events = scene.intersect_events(ray);
+
+                std::vector<PrimitiveHitEvent> events;
+                scene.intersect_events(ray, events);
                 if (events.empty()) {
                     image.set_pixel(x,y, scene.env_color);
                     continue;
@@ -198,7 +204,8 @@ public:
                             float           dist = (light.position - pos).norm();
                             Ray   shadow_ray(pos, wi);
 
-                            auto shadow_ev = scene.intersect_events(shadow_ray);
+                            std::vector<PrimitiveHitEvent> shadow_ev;
+                            scene.intersect_events(shadow_ray, shadow_ev);
                             for (size_t i = 0; i < active.size(); ++i)
                                 if (active[i])
                                     shadow_ev.insert(shadow_ev.begin(), {0.0f, true, i});
@@ -236,7 +243,8 @@ public:
                             Eigen::Vector3f wi = sample_uniform_direction_old();
                             Ray               env_ray(pos, wi);
 
-                            auto env_ev = scene.intersect_events(env_ray);
+                            std::vector<PrimitiveHitEvent> env_ev;
+                            scene.intersect_events(env_ray, env_ev);
                             for (size_t i = 0; i < active.size(); ++i)
                                 if (active[i])
                                     env_ev.insert(env_ev.begin(), {0.0f, true, i});
