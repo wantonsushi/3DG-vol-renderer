@@ -21,6 +21,29 @@ public:
         pixels.resize(3 * width * height);
     }
 
+    Image(const std::string& filename) {
+        std::ifstream infile(filename, std::ios::binary);
+        if (!infile) throw std::runtime_error("Failed to open PPM file: " + filename);
+
+        std::string magic;
+        infile >> magic;
+        if (magic != "P6") throw std::runtime_error("Not a P6 PPM file.");
+
+        infile >> width >> height;
+        int maxval;
+        infile >> maxval;
+        infile.get(); // consume newline
+
+        pixels.resize(3 * width * height);
+        for (unsigned j = 0; j < height; ++j) {
+            for (unsigned i = 0; i < width; ++i) {
+                unsigned char rgb[3];
+                infile.read(reinterpret_cast<char*>(rgb), 3);
+                set_pixel(i, j, Eigen::Vector3f(rgb[0]/255.f, rgb[1]/255.f, rgb[2]/255.f));
+            }
+        }
+    }
+
     unsigned int get_width() const { return width; }
     unsigned int get_height() const { return height; }
 

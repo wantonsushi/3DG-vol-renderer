@@ -412,6 +412,8 @@ public:
 //  FREE-FLIGHT SAMPLING GAUSSIANS (MULTI SCATTERING)
 // ============================================================================================
 
+//#define RECORD_PIXEL_GAUSSIANS
+
 class MultiScatterGaussians : public Integrator {
 private:
     int num_samples;
@@ -520,12 +522,37 @@ public:
     }
 
     void render(const Scene& scene, Image& image) override {
+        render(scene, image
+            #ifdef RECORD_PIXEL_GAUSSIANS
+                , nullptr
+            #endif
+        );
+    }
+
+    void render(const Scene& scene, Image& image
+    #ifdef RECORD_PIXEL_GAUSSIANS
+        , std::vector<std::vector<uint32_t>>* per_pixel_gaussians
+    #endif  
+    ) {
         const int W = image.get_width(), H = image.get_height();
+        const size_t Nprims = scene.get_num_primitives();
+
+        #ifdef RECORD_PIXEL_GAUSSIANS
+            // If the caller requested recording, pre-size the container once (single-threaded)
+            if (per_pixel_gaussians) {
+                per_pixel_gaussians->assign(size_t(W) * size_t(H), std::vector<uint32_t>());
+            }
+        #endif
+
         #pragma omp parallel for collapse(2) schedule(dynamic,1)
         for (int y = 0; y < H; ++y) {
             for (int x = 0; x < W; ++x) {
                 Eigen::Vector3f pixel_L = Eigen::Vector3f::Zero();
-                const size_t Nprims = scene.get_num_primitives();
+
+                // Per-pixel recording setup 
+                #ifdef RECORD_PIXEL_GAUSSIANS
+                    std::vector<uint32_t> pixel_list; // deduped list of gaussian indices that truly contributed to this pixel
+                #endif
 
                 for (int si = 0; si < num_samples; ++si) {
                     uint64_t seed = derive_path_seed(x, y, si);
@@ -585,6 +612,36 @@ public:
                             idx_epoch_tls,
                             idx_epoch_counter
                         );
+
+                        #ifdef RECORD_PIXEL_GAUSSIANS
+                            if (per_pixel_gaussians) {
+                                const float tol = 1e-6f;
+                                if (t_scatter >= 0.0f) {
+                                    // only events before (or at) the scattering point
+                                    for (const auto &ev : events_tls) {
+                                        if (ev.t <= t_scatter + tol) {
+                                            uint32_t g = ev.index;
+                                            // linear-search dedupe (pixel_list is usually very small)
+                                            bool found = false;
+                                            for (uint32_t q : pixel_list) { if (q == g) { found = true; break; } }
+                                            if (!found) pixel_list.push_back(g);
+                                        } else {
+                                            // events are sorted by t, so we can stop scanning
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    // no scatter occurred along this ray: conservatively record all forward intersection events
+                                    for (const auto &ev : events_tls) {
+                                        if (ev.t < 0.0f) continue;
+                                        uint32_t g = ev.index;
+                                        bool found = false;
+                                        for (uint32_t q : pixel_list) { if (q == g) { found = true; break; } }
+                                        if (!found) pixel_list.push_back(g);
+                                    }
+                                }
+                            }
+                        #endif
 
                         // if we never reached target, sample env
                         if (t_scatter < 0.f) {
@@ -647,7 +704,17 @@ public:
 
                 // average samples
                 image.set_pixel(x, y, pixel_L / float(num_samples));
+
+                // move per-pixel list into caller container (thread-safe because each pixel is handled by exactly one thread)
+                #ifdef RECORD_PIXEL_GAUSSIANS
+                    if (per_pixel_gaussians) {
+                        size_t pix = size_t(y) * size_t(W) + size_t(x);
+                        (*per_pixel_gaussians)[pix].swap(pixel_list);
+                    }
+                #endif
             }
         }
     }
+
+    void set_num_samples(int n) { num_samples = n; }
 };

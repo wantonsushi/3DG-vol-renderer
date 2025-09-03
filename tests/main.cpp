@@ -3,12 +3,16 @@
 #include "test_integrators.h"
 #include "gif.h"
 
+#include "inverse_integrator.h"
+
 #include <iostream>
 #include <memory>
 
 //#define MAKE_GIF
+//#define USE_INVERSE_OPT
 
 using namespace std;
+
 
 int main() {
     const unsigned int width = 512;
@@ -19,17 +23,22 @@ int main() {
 
     // Load scene
     // Scene scene = Scene::load_SMM("../scenes/spheres/1_spheres.txt");
-    Scene scene = Scene::load_GMM("../scenes/gaussians/2500_random_small.txt");
-    const int num_samples = 512;  // <-- must be power of 2 for stratified sampling
+    Scene scene = Scene::load_GMM("../scenes/gaussians/2g_altered.txt");
+    //Scene scene = Scene::load_GMM("../scenes/gaussians/250_random.txt");
+    const int num_samples = 256;  // <-- must be power of 2 for stratified sampling
     const float step_size = 0.01f;
 
 #ifndef MAKE_GIF
-    Image image(width, height);
     Eigen::Vector3f camera_pos{0, 1, 6};
     Eigen::Vector3f view_dir = (camera_lookat - camera_pos).normalized();
     auto camera = make_shared<Pinhole_Camera>(camera_pos, view_dir, FOV);
     //auto camera = make_shared<Orthographic_Camera>(camera_pos, view_dir);
 
+#ifndef USE_INVERSE_OPT
+    // -------------------------------------------------------------------------
+    // Forward rendering only (default)
+    // -------------------------------------------------------------------------
+    Image image(width, height);
     auto integrator = make_unique<MultiScatterGaussians>(camera, num_samples);
 
     auto start = chrono::high_resolution_clock::now();
@@ -42,6 +51,33 @@ int main() {
     image.make_PPM("output.ppm");
 
 #else
+    // -------------------------------------------------------------------------
+    // Inverse optimization (stochastic finite-diff)
+    // -------------------------------------------------------------------------
+    // Load reference image
+    Image I_ref("2g_highspp.ppm");
+
+    // Forward integrator for optimizer
+    auto forward_integrator = make_shared<MultiScatterGaussians>(camera, num_samples);
+
+    // Inverse optimizer
+    SFDDConfig cfg;  // configure as needed
+    auto inv_integrator = make_unique<StochasticFiniteDiffInverseIntegrator>(
+        camera, forward_integrator, cfg
+    );
+
+    auto start = chrono::high_resolution_clock::now();
+    inv_integrator->optimize(scene, I_ref);
+    auto end = chrono::high_resolution_clock::now();
+
+    chrono::duration<double> elapsed = end - start;
+    cout << "Inverse optimization time: " << elapsed.count() << " seconds" << endl;
+#endif // USE_INVERSE_OPT
+
+#else
+    // -------------------------------------------------------------------------
+    // GIF animation rendering mode
+    // -------------------------------------------------------------------------
     const int num_frames = 120;
     const float radius = 6.0f;
     const float height_pos = 1.0f;
@@ -76,7 +112,7 @@ int main() {
 
     GifEnd(&gif);
     cout << "GIF saved." << endl;
-#endif
+#endif // MAKE_GIF
 
     return 0;
 }

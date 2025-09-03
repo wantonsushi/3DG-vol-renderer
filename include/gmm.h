@@ -7,8 +7,30 @@
 #include <vector>
 #include <chrono>
 
+#include <Eigen/Cholesky> // for LLT
+#include <Eigen/Dense>
+
+#include <new> 
+
 #include "gaussian.h"
 #include "smm.h"
+
+static inline float sigmoidf_safe(float x) {
+    if (x >= 0.0f) {
+        float z = std::exp(-x);
+        return 1.0f / (1.0f + z);
+    } else {
+        float z = std::exp(x);
+        return z / (1.0f + z);
+    }
+}
+
+static inline float inv_sigmoidf(float y) {
+    const float eps = 1e-7f;
+    float yy = std::clamp(y, eps, 1.0f - eps);
+    return std::log(yy / (1.0f - yy));
+}
+
 
 class GaussianMixtureModel {
 private:
@@ -554,4 +576,131 @@ public:
 
         return std::exp(-float(optical_depth_sum));
     }
+
+    // map gaussians to feature vector 
+    // ==========================================================================
+
+    inline void pack_parameters(std::vector<float>& out) const {
+        const size_t N = gaussians.size();
+        out.clear();
+        out.reserve(N * 11);
+
+        for (size_t i = 0; i < N; ++i) {
+            const Gaussian& g = gaussians[i];
+
+            // mean (3)
+            Eigen::Vector3f mean = g.centroid();
+            out.push_back(mean.x());
+            out.push_back(mean.y());
+            out.push_back(mean.z());
+
+            // rotation: convert rotation matrix -> axis-angle (Rodrigues) vector
+            Eigen::Matrix3f R = g.get_rotation();
+            Eigen::AngleAxisf aa(R);
+            Eigen::Vector3f rod = aa.axis() * aa.angle(); // axis * angle
+            
+            if (!std::isfinite(rod.x()) || !std::isfinite(rod.y()) || !std::isfinite(rod.z())) {
+                rod = Eigen::Vector3f::Zero();
+            }
+            out.push_back(rod.x());
+            out.push_back(rod.y());
+            out.push_back(rod.z());
+
+            // pack log(scale_diag) so optimizer maintains positivity
+            Eigen::Matrix3f S = g.get_scale();
+            Eigen::Vector3f sdiag = S.diagonal();
+            // guard positive
+            float sx = std::max(sdiag.x(), 1e-12f);
+            float sy = std::max(sdiag.y(), 1e-12f);
+            float sz = std::max(sdiag.z(), 1e-12f);
+            out.push_back(std::log(sx));
+            out.push_back(std::log(sy));
+            out.push_back(std::log(sz));
+
+            // density as log_density (same as before)
+            float dens = std::max(g.get_density(), 1e-12f);
+            out.push_back(std::log(dens));
+
+            // albedo as sigmoid so optimizer stays between 0,1
+            float alb = std::clamp(g.get_albedo(), 0.0f, 1.0f);
+            out.push_back(inv_sigmoidf(alb));
+        }
+    }
 };
+
+// map feature vector back to gaussians
+// ==========================================================================
+
+static inline void apply_params_to_gmm_local(const std::vector<float>& params, GaussianMixtureModel &gmm) {
+    const size_t per = 11;
+    const size_t N = gmm.gaussians.size();
+    if (params.size() != N * per) throw std::runtime_error("apply params size mismatch");
+
+    for (size_t i = 0; i < N; ++i) {
+        const float* p = params.data() + i * per;
+        Eigen::Vector3f mean(p[0], p[1], p[2]);
+
+        // Rodrigues vector -> Rotation matrix
+        Eigen::Vector3f rod(p[3], p[4], p[5]);
+        float angle = rod.norm();
+        Eigen::Matrix3f R = Eigen::Matrix3f::Identity();
+        if (angle > 1e-12f) {
+            Eigen::Vector3f axis = rod / angle;
+            Eigen::AngleAxisf aa(angle, axis);
+            R = aa.toRotationMatrix();
+        }
+
+        float log_sx = p[6];
+        float log_sy = p[7];
+        float log_sz = p[8];
+        float sx = std::exp(log_sx);
+        float sy = std::exp(log_sy);
+        float sz = std::exp(log_sz);
+        Eigen::Matrix3f S = Eigen::Matrix3f::Zero();
+        S(0,0) = sx;
+        S(1,1) = sy;
+        S(2,2) = sz;
+
+        // build density & albedo
+        float density = std::exp(p[9]);
+        float albedo = sigmoidf_safe(p[10]);
+        albedo = std::clamp(albedo, 0.0f, 1.0f);
+
+        // using the rotation+scale ctor
+        gmm.gaussians[i].~Gaussian();
+        new (&gmm.gaussians[i]) Gaussian(mean, R, S, density, albedo);
+    }
+    gmm.BuildBVH();
+}
+
+// eps for each param to get finite differences
+static inline std::vector<float> make_default_eps_for_params(const std::vector<float>& base_params) {
+    size_t D = base_params.size();
+    std::vector<float> eps(D);
+
+    const float eps_mean = 0.02f;
+    const float eps_rotation = 0.10f;
+    const float eps_log_scale = 0.05f;   
+    const float eps_log_density = 0.25f;
+    const float eps_albedo_logit = 0.5f;
+
+    for (size_t i = 0; i < D; i += 11) {
+        // means
+        eps[i + 0] = eps_mean;
+        eps[i + 1] = eps_mean;
+        eps[i + 2] = eps_mean;
+        // rotation
+        eps[i + 3] = eps_rotation;
+        eps[i + 4] = eps_rotation;
+        eps[i + 5] = eps_rotation;
+        // scales (log)
+        eps[i + 6] = eps_log_scale;
+        eps[i + 7] = eps_log_scale;
+        eps[i + 8] = eps_log_scale;
+        // density (log)
+        eps[i + 9] = eps_log_density;
+        // albedo (sigmoid)
+        eps[i + 10] = eps_albedo_logit;
+    }
+    return eps;
+}

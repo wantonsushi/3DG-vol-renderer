@@ -28,12 +28,12 @@ inline double erfinv_approx(double x) {
 class Gaussian {
 private:
     Eigen::Vector3f mean;           // Centre of the Gaussian
-    //Eigen::Matrix3f covariance;     // Covariance matrix defining shape
+    Eigen::Matrix3f covariance;     // Covariance matrix defining shape
     float density;                  // Density scale
     float albedo;                   // Single scattering albedo
     Eigen::Vector3f emission;       // Emitted radiance (default ⟨0,0,0⟩)
 
-    const float R = 3.0f;                 // Threshold for finite bound (R*STDDEV)
+    static constexpr float R = 3.0f;                 // Threshold for finite bound (R*STDDEV)
 
     // precomputable quantities:  (if precomputation is done, do not need to store covariance)
     Eigen::Matrix3f inv_cov;         
@@ -45,15 +45,11 @@ private:
     Eigen::Matrix3f eigvecs;    // columns are eigenvectors
     Eigen::Vector3f eigvals;    // eigenvalues
 
-public:
-    Gaussian(
-        const Eigen::Vector3f& mean,
-        const Eigen::Matrix3f& covariance,
-        float density,
-        float albedo,
-        const Eigen::Vector3f& emission = Eigen::Vector3f::Zero())
-        : mean(mean), density(density), albedo(albedo), emission(emission)
-    {
+    Eigen::Matrix3f rotation; // R
+    Eigen::Matrix3f scale; // S
+
+    // common precomputation performed after covariance is set
+    void precompute_from_covariance() {
         inv_cov = covariance.inverse();
         float det_cov = covariance.determinant();
         norm = std::pow(2.0f * std::numbers::pi, -1.5f) * std::pow(det_cov, -0.5f);
@@ -62,12 +58,54 @@ public:
         eigvals = es.eigenvalues();
         eigvecs = es.eigenvectors();
 
+        // compute whitening transform: maps R*stddev ellipsoid -> unit sphere
         Eigen::Matrix3f sqrt_inv_lambda = Eigen::Matrix3f::Zero();
-        sqrt_inv_lambda(0,0) = 1.0f / std::sqrt(eigvals[0]);
-        sqrt_inv_lambda(1,1) = 1.0f / std::sqrt(eigvals[1]);
-        sqrt_inv_lambda(2,2) = 1.0f / std::sqrt(eigvals[2]);
+        // guard eigenvalues to be non-negative for numerics
+        float ev0 = std::max<float>(eigvals[0], 1e-12f);
+        float ev1 = std::max<float>(eigvals[1], 1e-12f);
+        float ev2 = std::max<float>(eigvals[2], 1e-12f);
+        sqrt_inv_lambda(0,0) = 1.0f / std::sqrt(ev0);
+        sqrt_inv_lambda(1,1) = 1.0f / std::sqrt(ev1);
+        sqrt_inv_lambda(2,2) = 1.0f / std::sqrt(ev2);
 
         whitening_T = sqrt_inv_lambda * eigvecs.transpose() * (1.0f / R);
+    }
+
+public:
+    Gaussian(
+        const Eigen::Vector3f& mean,
+        const Eigen::Matrix3f& covariance,
+        float density,
+        float albedo,
+        const Eigen::Vector3f& emission = Eigen::Vector3f::Zero())
+        : mean(mean), covariance(covariance), density(density), albedo(albedo), emission(emission)
+    {
+        precompute_from_covariance();
+
+        // set rotation to eigenvectors and scale to sqrt(eigenvalues) on diagonal
+        rotation = eigvecs;
+        Eigen::Matrix3f S = Eigen::Matrix3f::Zero();
+        S(0,0) = std::sqrt(std::max<float>(eigvals[0], 0.0f));
+        S(1,1) = std::sqrt(std::max<float>(eigvals[1], 0.0f));
+        S(2,2) = std::sqrt(std::max<float>(eigvals[2], 0.0f));
+        scale = S;
+    }
+
+    // Alternative constructor: takes rotation (R) and scale (S) matrices directly and builds covariance = R*S*S^T*R^T
+    Gaussian(
+        const Eigen::Vector3f& mean,
+        const Eigen::Matrix3f& rotation_in,
+        const Eigen::Matrix3f& scale_in,
+        float density,
+        float albedo,
+        const Eigen::Vector3f& emission = Eigen::Vector3f::Zero()
+    )
+        : mean(mean), rotation(rotation_in), scale(scale_in), density(density), albedo(albedo), emission(emission)
+    {
+        // build covariance from provided rotation and scale
+        covariance = rotation * scale * scale.transpose() * rotation.transpose();
+
+        precompute_from_covariance();
     }
 
     float evaluate(const Eigen::Vector3f& x) const {
@@ -78,6 +116,11 @@ public:
 
     float mu_t(const Eigen::Vector3f& x) const { return density * evaluate(x); }  // get extinction at a point
     float get_albedo() const { return albedo; }                                   // get single scattering scattering albedo
+
+    const Eigen::Matrix3f& get_covariance() const { return covariance; }
+    const float get_density() const { return density; }
+    const Eigen::Matrix3f& get_rotation() const { return rotation; }
+    const Eigen::Matrix3f& get_scale() const { return scale; }
 
     // analytic ray-gaussian intersection by solving ellipsoid equation
     bool intersect_direct(const Ray& ray, float& t_enter, float& t_exit) const {
